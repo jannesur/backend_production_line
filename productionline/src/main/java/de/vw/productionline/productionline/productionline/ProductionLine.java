@@ -1,9 +1,13 @@
 package de.vw.productionline.productionline.productionline;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class ProductionLine {
@@ -13,6 +17,8 @@ public class ProductionLine {
     private Status status;
     private SimulationStatus simulationStatus;
     private VehicleModel vehicleModel;
+    @OneToMany(mappedBy = "productionline")
+    List<ProductionStep> productionSteps;
 
     public ProductionLine() {
 
