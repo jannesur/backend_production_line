@@ -2,10 +2,12 @@ package de.vw.productionline.productionline.productionstep;
 
 import java.util.UUID;
 
+import de.vw.productionline.productionline.productionline.ProductionLine;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -16,6 +18,8 @@ public abstract class ProductionStep {
     private long durationInMinutes;
     private double failureProbability;
     private long timeToRecovery;
+    @ManyToOne
+    private ProductionLine productionLine;
 
     public ProductionStep() {
     }
