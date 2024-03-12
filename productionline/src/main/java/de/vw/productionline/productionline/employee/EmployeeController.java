@@ -1,8 +1,8 @@
 package de.vw.productionline.productionline.employee;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class EmployeeController {
     private EmployeeService employeeService;
 

@@ -2,13 +2,23 @@ package de.vw.productionline.productionline.employee;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import de.vw.productionline.productionline.station.Station;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Employee {
 
+    @Id
     private UUID uuid;
     private String name;
+
+    @ManyToOne
+    @JsonManagedReference
+    private Station station;
 
     public Employee(UUID uuid, String name) {
         this.uuid = uuid;
