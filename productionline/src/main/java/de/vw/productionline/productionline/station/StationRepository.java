@@ -1,9 +1,7 @@
 package de.vw.productionline.productionline.station;
 
-import java.util.UUID;
+import de.vw.productionline.productionline.productionstep.ProductionStepRepository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface StationRepository extends JpaRepository<Station, UUID> {
+public interface StationRepository extends ProductionStepRepository<Station> {
 
 }
