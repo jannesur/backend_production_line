@@ -7,8 +7,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import de.vw.productionline.productionline.employee.Employee;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
+import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 
+@Entity
 public class Station extends ProductionStep {
     @OneToMany(mappedBy = "station")
     @JsonBackReference

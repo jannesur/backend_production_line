@@ -13,16 +13,17 @@ import jakarta.persistence.ManyToOne;
 public class Employee {
 
     @Id
-    private UUID uuid;
+    private UUID uuid = UUID.randomUUID();
     private String name;
 
     @ManyToOne
     @JsonManagedReference
     private Station station;
 
-    public Employee(UUID uuid, String name) {
+    public Employee(UUID uuid, String name, Station station) {
         this.uuid = uuid;
         this.name = name;
+        this.station = station;
     }
 
     public Employee() {
@@ -36,12 +37,21 @@ public class Employee {
         this.name = name;
     }
 
+    public Station getStation() {
+        return station;
+    }
+
+    public void setStation(Station station) {
+        this.station = station;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((station == null) ? 0 : station.hashCode());
         return result;
     }
 
@@ -63,6 +73,11 @@ public class Employee {
             if (other.name != null)
                 return false;
         } else if (!name.equals(other.name))
+            return false;
+        if (station == null) {
+            if (other.station != null)
+                return false;
+        } else if (!station.equals(other.station))
             return false;
         return true;
     }
