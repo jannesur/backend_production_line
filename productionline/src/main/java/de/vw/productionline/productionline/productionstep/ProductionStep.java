@@ -3,6 +3,7 @@ package de.vw.productionline.productionline.productionstep;
 import java.util.UUID;
 
 import de.vw.productionline.productionline.productionline.ProductionLine;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;

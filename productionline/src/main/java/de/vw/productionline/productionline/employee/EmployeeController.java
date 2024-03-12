@@ -1,12 +1,14 @@
 package de.vw.productionline.productionline.employee;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,30 +20,35 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    @GetMapping("all")
+    @GetMapping()
     public List<Employee> getAllEmployees() {
-        List<Employee> employees = employeeService.getAllEmployees();
-        if (employees.isEmpty()) {
-            throw new IllegalArgumentException("No employees found");
-        }
         return employeeService.getAllEmployees();
     }
 
     @GetMapping("without-station")
     public List<Employee> getAllEmployeesWithoutStation() {
-        List<Employee> employees = employeeService.getAllEmployeesWithoutStation();
-        if (employees.isEmpty()) {
-            throw new IllegalArgumentException("No employees without station found");
-        }
-        return employees;
+        return employeeService.getAllEmployeesWithoutStation();
     }
 
-    @GetMapping("id")
-    public Employee getEmployeeById(@RequestParam UUID uuid) {
-        Optional<Employee> employee = employeeService.getEmployeeById(uuid);
-        if (employee.isEmpty()) {
-            throw new IllegalArgumentException("Employee not found");
-        }
-        return employee.get();
+    @GetMapping("{uuid}")
+    public Employee getEmployeeById(@PathVariable(value = "uuid") UUID uuid) {
+        return employeeService.getEmployeeById(uuid);
     }
+
+    @PostMapping()
+    public Employee createEmployee(@RequestBody Employee employee) {
+        return employeeService.createEmployee(employee);
+    }
+
+    @DeleteMapping("{uuid}")
+    public void deleteEmployee(@PathVariable(value = "uuid") UUID uuid) {
+        employeeService.deleteEmployee(uuid);
+    }
+
+    // @PutMapping("{uuid}")
+    // public Employee updateEmployee(@PathVariable(value = "uuid") UUID uuid,
+    // @RequestBody Employee employee) {
+    // return employeeService.updateEmployee(uuid, employee);
+    // }
+
 }
