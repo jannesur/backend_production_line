@@ -1,5 +1,6 @@
 package de.vw.productionline.productionline.station;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ import jakarta.persistence.OneToMany;
 public class Station extends ProductionStep {
     @OneToMany(mappedBy = "station")
     @JsonBackReference
-    private Set<Employee> employees;
+    private Set<Employee> employees = new HashSet<>();
 
     public Station(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
             Set<Employee> employees) {
