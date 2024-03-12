@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import de.vw.productionline.productionline.employee.Employee;
+import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -18,8 +19,8 @@ public class Station extends ProductionStep {
     private Set<Employee> employees = new HashSet<>();
 
     public Station(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
-            Set<Employee> employees) {
-        super(uuid, name, duration, failureProbability, timeToRecovery);
+            ProductionLine productionLine, Set<Employee> employees) {
+        super(uuid, name, duration, failureProbability, timeToRecovery, productionLine);
         this.employees = employees;
     }
 
@@ -27,11 +28,16 @@ public class Station extends ProductionStep {
     }
 
     public Set<Employee> getEmployees() {
-        return employees;
+        return this.employees;
     }
 
     public void setEmployees(Set<Employee> employees) {
         this.employees = employees;
+    }
+
+    @Override
+    public String toString() {
+        return "Station [employees=" + employees + "]";
     }
 
     @Override

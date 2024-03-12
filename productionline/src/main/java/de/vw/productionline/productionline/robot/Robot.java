@@ -2,6 +2,7 @@ package de.vw.productionline.productionline.robot;
 
 import java.util.UUID;
 
+import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
 
@@ -11,8 +12,8 @@ public class Robot extends ProductionStep {
     private long maintenanceTimeInMinutes;
 
     public Robot(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
-            long maintenanceCycleInMinutes, long maintenanceTimeInMinutes) {
-        super(uuid, name, duration, failureProbability, timeToRecovery);
+            ProductionLine productionLine, long maintenanceCycleInMinutes, long maintenanceTimeInMinutes) {
+        super(uuid, name, duration, failureProbability, timeToRecovery, productionLine);
         this.maintenanceCycleInMinutes = maintenanceCycleInMinutes;
         this.maintenanceTimeInMinutes = maintenanceTimeInMinutes;
     }

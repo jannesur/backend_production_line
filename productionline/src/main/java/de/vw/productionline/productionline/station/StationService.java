@@ -1,13 +1,12 @@
 package de.vw.productionline.productionline.station;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import de.vw.productionline.productionline.employee.Employee;
+import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
 
 @Service
 public class StationService {
@@ -17,13 +16,22 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public Set<Employee> getEmployeesByStationId(UUID uuid) {
-        Optional<Station> optional = stationRepository.findById(uuid);
+    public List<Station> getAllStations() {
+        return this.stationRepository.findAll();
+    }
+
+    public Station getStationById(UUID uuid) {
+        Optional<Station> optional = this.stationRepository.findById(uuid);
         if (optional.isPresent()) {
-            return optional.get().getEmployees();
+            return optional.get();
         }
 
-        return new HashSet<>();
+        throw new ObjectNotFoundException(String.format("Station with UUID %s", uuid));
+    }
+
+    public List<Station> getAllStationsNotInProductionLine() {
+        List<Station> stations = this.stationRepository.findAll();
+        return stations.stream().filter(station -> station.getProductionLine() != null).toList();
     }
 
 }
