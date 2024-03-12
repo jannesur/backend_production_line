@@ -24,14 +24,14 @@ public class ProductionLine {
 
     }
 
-    public ProductionLine(UUID uuid, String name, Status status, SimulationStatus simulationStatus, VehicleModel vehicleModel) {
+    public ProductionLine(UUID uuid, String name, Status status, SimulationStatus simulationStatus,
+            VehicleModel vehicleModel) {
         this.uuid = uuid;
         this.name = name;
         this.status = status;
         this.simulationStatus = simulationStatus;
         this.vehicleModel = vehicleModel;
     }
-
 
     public UUID getUuid() {
         return this.uuid;
@@ -69,18 +69,23 @@ public class ProductionLine {
         this.vehicleModel = vehicleModel;
     }
 
+    public List<ProductionStep> getProductionSteps() {
+        return productionSteps;
+    }
+
+    public void setProductionSteps(List<ProductionStep> productionSteps) {
+        this.productionSteps = productionSteps;
+    }
 
     @Override
     public String toString() {
         return "{" +
-            " uuid='" + getUuid() + "'" +
-            ", name='" + getName() + "'" +
-            ", status='" + getStatus() + "'" +
-            ", simulationStatus='" + getSimulationStatus() + "'" +
-            ", vehicleModel='" + getVehicleModel() + "'" +
-            "}";
+                " uuid='" + getUuid() + "'" +
+                ", name='" + getName() + "'" +
+                ", status='" + getStatus() + "'" +
+                ", simulationStatus='" + getSimulationStatus() + "'" +
+                ", vehicleModel='" + getVehicleModel() + "'" +
+                "}";
     }
-
-    
 
 }

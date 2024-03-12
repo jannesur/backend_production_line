@@ -18,13 +18,15 @@ public abstract class ProductionStep {
     private long durationInMinutes;
     private double failureProbability;
     private long timeToRecovery;
+    private int stepNumber;
     @ManyToOne
     private ProductionLine productionLine;
 
     public ProductionStep() {
     }
 
-    public ProductionStep(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery) {
+    public ProductionStep(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
+            int stepNumber) {
         this.uuid = uuid;
         this.name = name;
         this.durationInMinutes = duration;
@@ -66,6 +68,14 @@ public abstract class ProductionStep {
 
     public void setTimeToRecovery(long timeToRecovery) {
         this.timeToRecovery = timeToRecovery;
+    }
+
+    public int getStepNumber() {
+        return stepNumber;
+    }
+
+    public void setStepNumber(int stepNumber) {
+        this.stepNumber = stepNumber;
     }
 
     @Override

@@ -17,8 +17,8 @@ public class Station extends ProductionStep {
     private Set<Employee> employees;
 
     public Station(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
-            Set<Employee> employees) {
-        super(uuid, name, duration, failureProbability, timeToRecovery);
+            Set<Employee> employees, int stepNumber) {
+        super(uuid, name, duration, failureProbability, timeToRecovery, stepNumber);
         this.employees = employees;
     }
 
