@@ -17,7 +17,7 @@ public class ProductionLine {
     private Status status;
     private SimulationStatus simulationStatus;
     private VehicleModel vehicleModel;
-    @OneToMany(mappedBy = "productionline")
+    @OneToMany(mappedBy = "productionLine")
     List<ProductionStep> productionSteps;
 
     public ProductionLine() {
