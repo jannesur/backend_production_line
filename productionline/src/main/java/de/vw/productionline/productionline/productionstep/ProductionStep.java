@@ -24,12 +24,14 @@ public abstract class ProductionStep {
     public ProductionStep() {
     }
 
-    public ProductionStep(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery) {
+    public ProductionStep(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
+            ProductionLine productionLine) {
         this.uuid = uuid;
         this.name = name;
         this.durationInMinutes = duration;
         this.failureProbability = failureProbability;
         this.timeToRecovery = timeToRecovery;
+        this.productionLine = productionLine;
     }
 
     public UUID getUuid() {
@@ -68,11 +70,19 @@ public abstract class ProductionStep {
         this.timeToRecovery = timeToRecovery;
     }
 
+    public ProductionLine getProductionLine() {
+        return productionLine;
+    }
+
+    public void setProductionLine(ProductionLine productionLine) {
+        this.productionLine = productionLine;
+    }
+
     @Override
     public String toString() {
-        return "ProductionStep [uuid=" + uuid + ", name=" + name + ", duration=" + durationInMinutes
-                + ", failureProbability="
-                + failureProbability + ", timeToRecovery=" + timeToRecovery + "]";
+        return "ProductionStep [uuid=" + uuid + ", name=" + name + ", durationInMinutes=" + durationInMinutes
+                + ", failureProbability=" + failureProbability + ", timeToRecovery=" + timeToRecovery
+                + ", productionLine=" + productionLine + "]";
     }
 
     @Override
@@ -86,6 +96,7 @@ public abstract class ProductionStep {
         temp = Double.doubleToLongBits(failureProbability);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + (int) (timeToRecovery ^ (timeToRecovery >>> 32));
+        result = prime * result + ((productionLine == null) ? 0 : productionLine.hashCode());
         return result;
     }
 
@@ -113,6 +124,11 @@ public abstract class ProductionStep {
         if (Double.doubleToLongBits(failureProbability) != Double.doubleToLongBits(other.failureProbability))
             return false;
         if (timeToRecovery != other.timeToRecovery)
+            return false;
+        if (productionLine == null) {
+            if (other.productionLine != null)
+                return false;
+        } else if (!productionLine.equals(other.productionLine))
             return false;
         return true;
     }
