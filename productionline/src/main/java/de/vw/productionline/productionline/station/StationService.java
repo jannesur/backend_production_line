@@ -22,16 +22,42 @@ public class StationService {
 
     public Station getStationById(UUID uuid) {
         Optional<Station> optional = this.stationRepository.findById(uuid);
-        if (optional.isPresent()) {
-            return optional.get();
+        if (optional.isEmpty()) {
+            throw new ObjectNotFoundException(String.format("Station with UUID %s does not exist.", uuid));
         }
 
-        throw new ObjectNotFoundException(String.format("Station with UUID %s", uuid));
+        return optional.get();
     }
 
     public List<Station> getAllStationsNotInProductionLine() {
         List<Station> stations = this.stationRepository.findAll();
         return stations.stream().filter(station -> station.getProductionLine() != null).toList();
+    }
+
+    public Station saveStation(Station station) {
+        Optional<Station> optional = this.stationRepository.getByName(station.getName());
+        if (optional.isPresent()) {
+
+        }
+        return this.stationRepository.save(station);
+    }
+
+    public Station updateStation(Station station) {
+        Optional<Station> optional = this.stationRepository.findById(station.getUuid());
+        if (optional.isEmpty()) {
+            throw new ObjectNotFoundException(String.format("Station with UUID %s does not exist.", station.getUuid()));
+        }
+
+        return this.stationRepository.save(station);
+    }
+
+    public void deleteStationById(UUID uuid) {
+        Optional<Station> optional = this.stationRepository.findById(uuid);
+        if (optional.isEmpty()) {
+            throw new ObjectNotFoundException(String.format("Station with UUID %s does not exist.", uuid));
+        }
+
+        this.stationRepository.delete(optional.get());
     }
 
 }
