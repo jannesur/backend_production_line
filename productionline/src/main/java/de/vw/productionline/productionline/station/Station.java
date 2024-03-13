@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import de.vw.productionline.productionline.employee.Employee;
 import de.vw.productionline.productionline.productionline.ProductionLine;
@@ -15,7 +15,7 @@ import jakarta.persistence.OneToMany;
 @Entity
 public class Station extends ProductionStep {
     @OneToMany(mappedBy = "station")
-    @JsonBackReference
+    @JsonManagedReference
     private Set<Employee> employees = new HashSet<>();
 
     public Station(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,

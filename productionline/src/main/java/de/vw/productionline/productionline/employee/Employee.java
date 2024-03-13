@@ -2,7 +2,7 @@ package de.vw.productionline.productionline.employee;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import de.vw.productionline.productionline.station.Station;
 import jakarta.persistence.Entity;
@@ -19,7 +19,7 @@ public class Employee {
     private String name;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     private Station station;
 
     public Employee(String name, Station station) {
@@ -85,6 +85,11 @@ public class Employee {
         } else if (!station.equals(other.station))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee [uuid=" + uuid + ", name=" + name + ", station=" + station + "]";
     }
 
 }
