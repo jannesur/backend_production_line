@@ -8,12 +8,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.vw.productionline.productionline.employee.Employee;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 
 @Entity
 public class Station extends ProductionStep {
-    @OneToMany(mappedBy = "station")
+    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Employee> employees = new HashSet<>();
 

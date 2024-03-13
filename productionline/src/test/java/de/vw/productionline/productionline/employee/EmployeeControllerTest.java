@@ -1,6 +1,7 @@
 package de.vw.productionline.productionline.employee;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +9,9 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
@@ -52,7 +53,7 @@ public class EmployeeControllerTest {
     @Test
     public void testGetAllEmployees() {
         // given
-        int expectedAmountEmployees = 4;
+        long expectedAmountEmployees = employeeRepository.count();
 
         // when
         List<Employee> employees = employeeController.getAllEmployees();
@@ -64,7 +65,8 @@ public class EmployeeControllerTest {
     @Test
     public void testGetAllEmployeesWithoutStation() {
         // given
-        int expectedAmountEmployeesWithoutStation = 3;
+        long expectedAmountEmployeesWithoutStation = employeeRepository.findAll().stream()
+                .filter(employee -> employee.getStation() == null).count();
 
         // when
         List<Employee> employeesWithoutStation = employeeController.getAllEmployeesWithoutStation();
