@@ -19,17 +19,23 @@ public class ProductionLine {
     @OneToMany(mappedBy = "productionLine")
     List<ProductionStep> productionSteps;
 
-    public ProductionLine() {
-
-    }
-
-    public ProductionLine(UUID uuid, String name, Status status, SimulationStatus simulationStatus,
+    public ProductionLine(String name, Status status, SimulationStatus simulationStatus,
             VehicleModel vehicleModel) {
-        this.uuid = uuid;
         this.name = name;
         this.status = status;
         this.simulationStatus = simulationStatus;
         this.vehicleModel = vehicleModel;
+    }
+
+    public ProductionLine(String name, VehicleModel vehicleModel) {
+        this.name = name;
+        this.status = Status.INCOMPLETE;
+        this.simulationStatus = SimulationStatus.STOPPED;
+        this.vehicleModel = vehicleModel;
+    }
+
+    public ProductionLine() {
+
     }
 
     public UUID getUuid() {
