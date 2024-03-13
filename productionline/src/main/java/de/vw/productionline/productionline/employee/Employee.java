@@ -2,31 +2,36 @@ package de.vw.productionline.productionline.employee;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import de.vw.productionline.productionline.station.Station;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Employee {
 
     @Id
     private UUID uuid = UUID.randomUUID();
+    @NotBlank(message = "Employee name cannot be null")
     private String name;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     private Station station;
 
-    public Employee(UUID uuid, String name, Station station) {
-        this.uuid = uuid;
+    public Employee(String name, Station station) {
         this.name = name;
         this.station = station;
     }
 
     public Employee() {
+    }
+
+    public UUID getId() {
+        return uuid;
     }
 
     public String getName() {
@@ -80,6 +85,11 @@ public class Employee {
         } else if (!station.equals(other.station))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee [uuid=" + uuid + ", name=" + name + ", station=" + station + "]";
     }
 
 }
