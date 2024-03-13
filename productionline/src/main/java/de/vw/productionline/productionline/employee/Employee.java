@@ -29,8 +29,12 @@ public class Employee {
     public Employee() {
     }
 
+    public UUID getUuid() {
+        return this.uuid;
+    }
+
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
