@@ -3,7 +3,6 @@ package de.vw.productionline.productionline.productionstep;
 import java.util.UUID;
 
 import de.vw.productionline.productionline.productionline.ProductionLine;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
@@ -22,17 +21,16 @@ public abstract class ProductionStep {
     @ManyToOne
     private ProductionLine productionLine;
 
-    public ProductionStep() {
-    }
-
-    public ProductionStep(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
+    protected ProductionStep(String name, long duration, double failureProbability, long timeToRecovery,
             ProductionLine productionLine) {
-        this.uuid = uuid;
         this.name = name;
         this.durationInMinutes = duration;
         this.failureProbability = failureProbability;
         this.timeToRecovery = timeToRecovery;
         this.productionLine = productionLine;
+    }
+
+    protected ProductionStep() {
     }
 
     public UUID getUuid() {

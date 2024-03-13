@@ -2,7 +2,6 @@ package de.vw.productionline.productionline.station;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -18,10 +17,20 @@ public class Station extends ProductionStep {
     @JsonManagedReference
     private Set<Employee> employees = new HashSet<>();
 
-    public Station(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
+    public Station(String name, long duration, double failureProbability, long timeToRecovery,
             ProductionLine productionLine, Set<Employee> employees) {
-        super(uuid, name, duration, failureProbability, timeToRecovery, productionLine);
+        super(name, duration, failureProbability, timeToRecovery, productionLine);
         this.employees = employees;
+    }
+
+    public Station(String name, long duration, double failureProbability, long timeToRecovery,
+            Set<Employee> employees) {
+        super(name, duration, failureProbability, timeToRecovery, null);
+        this.employees = employees;
+    }
+
+    public Station(String name, long duration, double failureProbability, long timeToRecovery) {
+        this(name, duration, failureProbability, timeToRecovery, null);
     }
 
     public Station() {

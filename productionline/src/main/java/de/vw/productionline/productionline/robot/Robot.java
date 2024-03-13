@@ -1,21 +1,28 @@
 package de.vw.productionline.productionline.robot;
 
-import java.util.UUID;
-
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class Robot extends ProductionStep {
+    @Positive(message = "Maintenance cycle in minutes must be greater than 0.")
     private long maintenanceCycleInMinutes;
+    @Positive(message = "Maintenance time in minutes must be greater than 0.")
     private long maintenanceTimeInMinutes;
 
-    public Robot(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
+    public Robot(String name, long duration, double failureProbability, long timeToRecovery,
             ProductionLine productionLine, long maintenanceCycleInMinutes, long maintenanceTimeInMinutes) {
-        super(uuid, name, duration, failureProbability, timeToRecovery, productionLine);
+        super(name, duration, failureProbability, timeToRecovery, productionLine);
         this.maintenanceCycleInMinutes = maintenanceCycleInMinutes;
         this.maintenanceTimeInMinutes = maintenanceTimeInMinutes;
+    }
+
+    public Robot(String name, long duration, double failureProbability, long timeToRecovery,
+            long maintenanceCycleInMinutes, long maintenanceTimeInMinutes) {
+        this(name, duration, failureProbability, timeToRecovery, null, maintenanceCycleInMinutes,
+                maintenanceTimeInMinutes);
     }
 
     public Robot() {
