@@ -8,25 +8,30 @@ import de.vw.productionline.productionline.station.Station;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Employee {
 
     @Id
     private UUID uuid = UUID.randomUUID();
+    @NotBlank(message = "Employee name cannot be null")
     private String name;
 
     @ManyToOne
     @JsonManagedReference
     private Station station;
 
-    public Employee(UUID uuid, String name, Station station) {
-        this.uuid = uuid;
+    public Employee(String name, Station station) {
         this.name = name;
         this.station = station;
     }
 
     public Employee() {
+    }
+
+    public UUID getId() {
+        return uuid;
     }
 
     public String getName() {

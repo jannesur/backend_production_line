@@ -17,21 +17,21 @@ public class ProductionLine {
     private Status status;
     private SimulationStatus simulationStatus;
     private VehicleModel vehicleModel;
-    @OneToMany(mappedBy = "productionline")
+    @OneToMany(mappedBy = "productionLine")
     List<ProductionStep> productionSteps;
 
     public ProductionLine() {
 
     }
 
-    public ProductionLine(UUID uuid, String name, Status status, SimulationStatus simulationStatus, VehicleModel vehicleModel) {
+    public ProductionLine(UUID uuid, String name, Status status, SimulationStatus simulationStatus,
+            VehicleModel vehicleModel) {
         this.uuid = uuid;
         this.name = name;
         this.status = status;
         this.simulationStatus = simulationStatus;
         this.vehicleModel = vehicleModel;
     }
-
 
     public UUID getUuid() {
         return this.uuid;
@@ -69,18 +69,15 @@ public class ProductionLine {
         this.vehicleModel = vehicleModel;
     }
 
-
     @Override
     public String toString() {
         return "{" +
-            " uuid='" + getUuid() + "'" +
-            ", name='" + getName() + "'" +
-            ", status='" + getStatus() + "'" +
-            ", simulationStatus='" + getSimulationStatus() + "'" +
-            ", vehicleModel='" + getVehicleModel() + "'" +
-            "}";
+                " uuid='" + getUuid() + "'" +
+                ", name='" + getName() + "'" +
+                ", status='" + getStatus() + "'" +
+                ", simulationStatus='" + getSimulationStatus() + "'" +
+                ", vehicleModel='" + getVehicleModel() + "'" +
+                "}";
     }
-
-    
 
 }
