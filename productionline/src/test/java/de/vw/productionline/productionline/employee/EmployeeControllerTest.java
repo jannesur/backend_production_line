@@ -3,10 +3,10 @@ package de.vw.productionline.productionline.employee;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +36,32 @@ public class EmployeeControllerTest {
         station.setName("Station 1");
         stationRepository.save(station);
 
-        List<Employee> employees = new ArrayList<>();
+        // List<Employee> employees = new ArrayList<>();
         Employee employee = new Employee("Adriana", null);
         Employee employee2 = new Employee("Janne", null);
         Employee employee3 = new Employee("Tim", null);
         Employee employee4 = new Employee("Chris", station);
 
-        employees.add(employee);
-        employees.add(employee2);
-        employees.add(employee3);
-        employees.add(employee4);
+        employeeRepository.save(employee);
+        employeeRepository.save(employee2);
+        employeeRepository.save(employee3);
+        employeeRepository.save(employee4);
+        // employees.add(employee);
+        // employees.add(employee2);
+        // employees.add(employee3);
+        // employees.add(employee4);
 
-        employeeRepository.saveAll(employees);
+        // employeeRepository.saveAll(employees);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        System.out.println("Number of stations in db: " + stationRepository.count());
+        System.out.println("Number of employees in db: " + employeeRepository.count());
+        // AFTER
+        // stationRepository.deleteAll();
+        System.out.println("Number of employees in db: " + employeeRepository.count());
+        // employeeRepository.deleteAll();
     }
 
     @Test

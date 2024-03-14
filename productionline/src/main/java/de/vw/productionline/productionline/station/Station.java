@@ -14,7 +14,7 @@ import jakarta.persistence.OneToMany;
 
 @Entity
 public class Station extends ProductionStep {
-    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "station", cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private Set<Employee> employees = new HashSet<>();
 

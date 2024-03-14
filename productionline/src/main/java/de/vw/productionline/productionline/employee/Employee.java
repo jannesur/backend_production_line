@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import de.vw.productionline.productionline.station.Station;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -18,8 +19,9 @@ public class Employee {
     @NotBlank(message = "Employee name cannot be null")
     private String name;
 
-    @ManyToOne
     @JsonBackReference
+    @Nullable
+    @ManyToOne
     private Station station;
 
     public Employee(String name, Station station) {
