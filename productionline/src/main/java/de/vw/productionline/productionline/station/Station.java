@@ -2,26 +2,36 @@ package de.vw.productionline.productionline.station;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import de.vw.productionline.productionline.employee.Employee;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 
 @Entity
 public class Station extends ProductionStep {
-    @OneToMany(mappedBy = "station")
+    @OneToMany(mappedBy = "station", cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private Set<Employee> employees = new HashSet<>();
 
-    public Station(UUID uuid, String name, long duration, double failureProbability, long timeToRecovery,
+    public Station(String name, long duration, double failureProbability, long timeToRecovery,
             ProductionLine productionLine, Set<Employee> employees) {
-        super(uuid, name, duration, failureProbability, timeToRecovery, productionLine);
+        super(name, duration, failureProbability, timeToRecovery, productionLine);
         this.employees = employees;
+    }
+
+    public Station(String name, long duration, double failureProbability, long timeToRecovery,
+            Set<Employee> employees) {
+        super(name, duration, failureProbability, timeToRecovery, null);
+        this.employees = employees;
+    }
+
+    public Station(String name, long duration, double failureProbability, long timeToRecovery) {
+        this(name, duration, failureProbability, timeToRecovery, null);
     }
 
     public Station() {
