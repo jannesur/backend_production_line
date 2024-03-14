@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,8 +47,8 @@ public class StationController {
         return this.stationService.updateStation(station);
     }
 
-    @PutMapping("add-employee/{employee-uuid}/{station-uuid}")
-    public Station addEmployeeToStation(@PathVariable UUID employeeUuid, @PathVariable UUID stationUuid) {
+    @PutMapping("add-employee")
+    public Station addEmployeeToStation(@RequestParam UUID employeeUuid, @RequestParam UUID stationUuid) {
         return this.stationService.addEmployeeToStation(employeeUuid, stationUuid);
     }
 

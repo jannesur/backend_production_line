@@ -47,14 +47,12 @@ public class Station extends ProductionStep {
 
     @Override
     public String toString() {
-        return "Station [employees=" + employees + "]";
+        return "Station [id=" + super.getUuid() + ", name=" + super.getName() + "]";
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((employees == null) ? 0 : employees.hashCode());
         return result;
     }
 
@@ -66,13 +64,7 @@ public class Station extends ProductionStep {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Station other = (Station) obj;
-        if (employees == null) {
-            if (other.employees != null)
-                return false;
-        } else if (!employees.equals(other.employees))
-            return false;
-        return true;
+        return super.equals(obj);
     }
 
 }

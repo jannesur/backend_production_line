@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
+import java.util.Objects;
 
 @Entity
 public class Employee {
@@ -59,7 +60,6 @@ public class Employee {
         int result = 1;
         result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((station == null) ? 0 : station.hashCode());
         return result;
     }
 
@@ -82,17 +82,11 @@ public class Employee {
                 return false;
         } else if (!name.equals(other.name))
             return false;
-        if (station == null) {
-            if (other.station != null)
-                return false;
-        } else if (!station.equals(other.station))
-            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "Employee [uuid=" + uuid + ", name=" + name + ", station=" + station + "]";
+        return "Employee [id=" + uuid + ", name=" + name + "]" + station;
     }
-
 }
