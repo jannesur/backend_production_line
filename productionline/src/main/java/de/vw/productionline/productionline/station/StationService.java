@@ -6,14 +6,19 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import de.vw.productionline.productionline.employee.Employee;
+import de.vw.productionline.productionline.employee.EmployeeRepository;
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
 
 @Service
 public class StationService {
     private StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
+    private EmployeeRepository employeeRepository;
+
+    public StationService(StationRepository stationRepository, EmployeeRepository employeeRepository) {
         this.stationRepository = stationRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public List<Station> getAllStations() {
@@ -35,29 +40,45 @@ public class StationService {
     }
 
     public Station saveStation(Station station) {
-        Optional<Station> optional = this.stationRepository.getByName(station.getName());
-        if (optional.isPresent()) {
-
-        }
         return this.stationRepository.save(station);
     }
 
     public Station updateStation(Station station) {
-        Optional<Station> optional = this.stationRepository.findById(station.getUuid());
-        if (optional.isEmpty()) {
+        Optional<Station> updatedStation = this.stationRepository.findById(station.getUuid());
+        if (updatedStation.isEmpty()) {
             throw new ObjectNotFoundException(String.format("Station with UUID %s does not exist.", station.getUuid()));
         }
-
         return this.stationRepository.save(station);
     }
 
+    public Station addEmployeeToStation(UUID employeeUuid, UUID stationUuid) {
+        Optional<Employee> employeeOptional = this.employeeRepository.findById(employeeUuid);
+        if (employeeOptional.isEmpty()) {
+            throw new ObjectNotFoundException(String.format("Employee with UUID %s does not exist.", employeeUuid));
+        }
+        Optional<Station> stationOptional = this.stationRepository.findById(stationUuid);
+        if (stationOptional.isEmpty()) {
+            throw new ObjectNotFoundException(String.format("Station with UUID %s does not exist.", stationUuid));
+        }
+        Employee employee = employeeOptional.get();
+        Station station = stationOptional.get();
+        employee.setStation(station);
+        this.employeeRepository.save(employee);
+        return station;
+    }
+
     public void deleteStationById(UUID uuid) {
-        Optional<Station> optional = this.stationRepository.findById(uuid);
-        if (optional.isEmpty()) {
+        Optional<Station> station = this.stationRepository.findById(uuid);
+        if (station.isEmpty()) {
             throw new ObjectNotFoundException(String.format("Station with UUID %s does not exist.", uuid));
         }
-
-        this.stationRepository.delete(optional.get());
+        if (!station.get().getEmployees().isEmpty()) {
+            for (Employee employee : station.get().getEmployees()) {
+                employee.setStation(null);
+                this.employeeRepository.save(employee);
+            }
+        }
+        this.stationRepository.delete(station.get());
     }
 
 }
