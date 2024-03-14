@@ -3,6 +3,8 @@ package de.vw.productionline.productionline.employee;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.vw.productionline.productionline.robot.Robot;
 import jakarta.validation.Valid;
 
 @RestController
@@ -25,33 +26,34 @@ public class EmployeeController {
     }
 
     @GetMapping()
-    public List<Employee> getAllEmployees() {
-        return employeeService.getAllEmployees();
+    public ResponseEntity<List<Employee>> getAllEmployees() {
+        return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
     @GetMapping("without-station")
-    public List<Employee> getAllEmployeesWithoutStation() {
-        return employeeService.getAllEmployeesWithoutStation();
+    public ResponseEntity<List<Employee>> getAllEmployeesWithoutStation() {
+        return ResponseEntity.ok(employeeService.getAllEmployeesWithoutStation());
     }
 
     @GetMapping("{uuid}")
-    public Employee getEmployeeById(@PathVariable(value = "uuid") UUID uuid) {
-        return employeeService.getEmployeeById(uuid);
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "uuid") UUID uuid) {
+        return ResponseEntity.ok(employeeService.getEmployeeById(uuid));
     }
 
     @PostMapping()
-    public Employee createEmployee(@Valid @RequestBody Employee employee) {
-        return employeeService.createEmployee(employee);
+    public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
+        return new ResponseEntity<>(employeeService.createEmployee(employee), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{uuid}")
-    public void deleteEmployee(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "uuid") UUID uuid) {
         employeeService.deleteEmployee(uuid);
+        return ResponseEntity.ok(null);
     }
 
     @PutMapping("/{uuid}")
-    public Employee updateEmployee(@PathVariable UUID uuid, @RequestBody Employee employee) {
-        return employeeService.updatEmployee(uuid, employee);
+    public ResponseEntity<Employee> updateEmployee(@PathVariable UUID uuid, @RequestBody Employee employee) {
+        return ResponseEntity.ok(employeeService.updatEmployee(uuid, employee));
     }
 
 }
