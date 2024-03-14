@@ -56,4 +56,15 @@ public class EmployeeService {
         employeeRepository.deleteById(uuid);
     }
 
+    public Employee updatEmployee (UUID uuid, Employee employee) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(uuid);
+        if(optionalEmployee.isEmpty()) {
+            throw new ObjectNotFoundException("Employee not found.");
+        }
+        Employee existingEmployee = optionalEmployee.get();
+        existingEmployee.setName(employee.getName());
+        existingEmployee.setStation(employee.getStation());
+        return employeeRepository.save(existingEmployee);
+    }
+
 }
