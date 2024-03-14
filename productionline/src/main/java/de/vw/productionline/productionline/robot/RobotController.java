@@ -3,6 +3,8 @@ package de.vw.productionline.productionline.robot;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequestMapping("/robots")
@@ -23,32 +24,33 @@ public class RobotController {
     }
 
     @GetMapping()
-    public List<Robot> getAllRobots() {
-        return robotService.getAllRobots();
+    public ResponseEntity<List<Robot>> getAllRobots() {
+        return ResponseEntity.ok(robotService.getAllRobots());
     }
 
     @GetMapping("/{uuid}")
-    public Robot getRobotById(@PathVariable(value = "uuid") UUID uuid) {
-        return robotService.getRobotById(uuid);
+    public ResponseEntity<Robot> getRobotById(@PathVariable(value = "uuid") UUID uuid) {
+        return ResponseEntity.ok(robotService.getRobotById(uuid));
     }
 
     @PostMapping()
-    public Robot createRobot(@RequestBody Robot robot) {
-        return robotService.createRobot(robot);
+    public ResponseEntity<Robot> createRobot(@RequestBody Robot robot) {
+        return new ResponseEntity<>(robotService.createRobot(robot), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{uuid}")
-    public void deleteRobot(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Void> deleteRobot(@PathVariable(value = "uuid") UUID uuid) {
         robotService.deleteRobot(uuid);
+        return new ResponseEntity<>(null);
     }
 
     @GetMapping("without")
-    public List<Robot> getRobotsWithoutProductionLine() {
-        return robotService.getAllRobotsNotInProductionLine();
+    public ResponseEntity<List<Robot>> getRobotsWithoutProductionLine() {
+        return ResponseEntity.ok(robotService.getAllRobotsNotInProductionLine());
     }
-    
+
     @PutMapping("/{uuid}")
-    public Robot updateRobot(@PathVariable UUID uuid, @RequestBody Robot updatedRobot) {
-        return robotService.updateRobot(uuid, updatedRobot);
+    public ResponseEntity<Robot> updateRobot(@PathVariable UUID uuid, @RequestBody Robot updatedRobot) {
+        return ResponseEntity.ok(robotService.updateRobot(uuid, updatedRobot));
     }
 }

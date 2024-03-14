@@ -3,6 +3,8 @@ package de.vw.productionline.productionline.station;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,37 +25,39 @@ public class StationController {
     }
 
     @GetMapping
-    public List<Station> getAllStations() {
-        return this.stationService.getAllStations();
+    public ResponseEntity<List<Station>> getAllStations() {
+        return ResponseEntity.ok(this.stationService.getAllStations());
     }
 
     @GetMapping("{uuid}")
-    public Station getStationById(@PathVariable UUID uuid) {
-        return this.stationService.getStationById(uuid);
+    public ResponseEntity<Station> getStationById(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(this.stationService.getStationById(uuid));
     }
 
     @GetMapping("without-production-line")
-    public List<Station> getStationsWithoutProductionLine() {
-        return this.stationService.getAllStationsNotInProductionLine();
+    public ResponseEntity<List<Station>> getStationsWithoutProductionLine() {
+        return ResponseEntity.ok(this.stationService.getAllStationsNotInProductionLine());
     }
 
     @PostMapping
-    public Station createStation(@RequestBody Station station) {
-        return this.stationService.saveStation(station);
+    public ResponseEntity<Station> createStation(@RequestBody Station station) {
+        return new ResponseEntity<>(this.stationService.saveStation(station), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public Station updateStation(@RequestBody Station station) {
-        return this.stationService.updateStation(station);
+    public ResponseEntity<Station> updateStation(@RequestBody Station station) {
+        return ResponseEntity.ok(this.stationService.updateStation(station));
     }
 
     @PutMapping("add-employee")
-    public Station addEmployeeToStation(@RequestParam UUID employeeUuid, @RequestParam UUID stationUuid) {
-        return this.stationService.addEmployeeToStation(employeeUuid, stationUuid);
+    public ResponseEntity<Station> addEmployeeToStation(@RequestParam UUID employeeUuid,
+            @RequestParam UUID stationUuid) {
+        return ResponseEntity.ok(this.stationService.addEmployeeToStation(employeeUuid, stationUuid));
     }
 
     @DeleteMapping("{uuid}")
-    public void deleteStationById(@PathVariable UUID uuid) {
+    public ResponseEntity<Void> deleteStationById(@PathVariable UUID uuid) {
         this.stationService.deleteStationById(uuid);
+        return new ResponseEntity<>(null);
     }
 }
