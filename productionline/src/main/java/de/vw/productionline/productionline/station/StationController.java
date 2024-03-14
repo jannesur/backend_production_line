@@ -46,6 +46,11 @@ public class StationController {
         return this.stationService.updateStation(station);
     }
 
+    @PutMapping("add-employee/{employee-uuid}/{station-uuid}")
+    public Station addEmployeeToStation(@PathVariable UUID employeeUuid, @PathVariable UUID stationUuid) {
+        return this.stationService.addEmployeeToStation(employeeUuid, stationUuid);
+    }
+
     @DeleteMapping("{uuid}")
     public void deleteStationById(@PathVariable UUID uuid) {
         this.stationService.deleteStationById(uuid);

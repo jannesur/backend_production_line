@@ -24,4 +24,3 @@ INSERT INTO employee (uuid, name, station_uuid) VALUES ('c2501544-5955-47f5-a04b
 INSERT INTO employee (uuid, name, station_uuid) VALUES ('dbef6306-d92b-4bd8-98b6-eff11c5effb9', 'Amelia', null);
 INSERT INTO employee (uuid, name, station_uuid) VALUES ('b41e7310-cd0b-4931-a38d-d75ab6097672', 'Hartmut', null);
 INSERT INTO employee (uuid, name, station_uuid) VALUES ('6a845542-f312-49ef-a30c-1b30aa544214', 'Penny', null);
-
