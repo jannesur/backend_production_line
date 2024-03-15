@@ -11,6 +11,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 
+//TODO: fix constructors to reflect new attributes!!
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class ProductionStep {
@@ -23,6 +24,9 @@ public abstract class ProductionStep {
     @ManyToOne
     @JsonBackReference
     private ProductionLine productionLine;
+
+    private ProductionStatus productionStatus;
+    private long remainingRecoveryTime;
 
     protected ProductionStep(String name, long duration, double failureProbability, long timeToRecovery,
             ProductionLine productionLine) {
