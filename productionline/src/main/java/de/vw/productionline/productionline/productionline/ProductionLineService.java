@@ -8,6 +8,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
+import de.vw.productionline.productionline.productionstep.ProductionStatus;
+import de.vw.productionline.productionline.productionstep.ProductionStep;
 
 @Service
 public class ProductionLineService {
@@ -40,7 +42,7 @@ public class ProductionLineService {
 
     public ProductionLine updateProductionLine(UUID uuid, ProductionLine productionLine) {
         Optional<ProductionLine> optionalProductionLine = productionLineRepository.findById(uuid);
-        if(optionalProductionLine.isEmpty()) {
+        if (optionalProductionLine.isEmpty()) {
             throw new ObjectNotFoundException("ProductionLine not found");
         }
         ProductionLine existingProductionLine = optionalProductionLine.get();

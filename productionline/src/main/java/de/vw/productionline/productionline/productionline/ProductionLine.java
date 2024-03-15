@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import de.vw.productionline.productionline.production.Production;
+import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -43,6 +44,12 @@ public class ProductionLine {
 
     public ProductionLine() {
 
+    }
+
+    public long maxNecessaryMaintenanceTimeInMinutes() {
+        return this.productionSteps.stream()
+                .filter(e -> e.getProductionStatus().equals(ProductionStatus.MAINTENANCE))
+                .mapToLong(e -> e.getRemainingRecoveryTime()).max().orElse(0);
     }
 
     public UUID getUuid() {

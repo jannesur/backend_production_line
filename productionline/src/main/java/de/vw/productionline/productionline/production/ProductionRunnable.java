@@ -19,13 +19,6 @@ public class ProductionRunnable implements Runnable {
 
     @Override
     public void run() {
-    
-        // loop through production steps and if recovery time != 0, reduce by one second
-
-        // (as version 1: only check at the beginning of each next production step if
-        // any robots need maintenance)
-        // if more than 1 robot needs maintenance -> check which maintenance time is
-        // longest and wait that amount of time
 
         // check if step is failure step
         // set status to RECOVERY
@@ -39,34 +32,57 @@ public class ProductionRunnable implements Runnable {
 
         ProductionLine productionLine = production.getProductionLine();
 
-        if(!productionLine.getStatus().equals(Status.READY)) {
+        if (!productionLine.getStatus().equals(Status.READY)) {
             throw new ProductionLineIncompleteException();
-        } 
+        }
         if (productionLine.getSimulationStatus().equals(SimulationStatus.RUNNING)) {
             throw new ProductionLineAlreadyRunningException();
-        } 
+        }
         productionLine.setSimulationStatus(SimulationStatus.RUNNING);
 
-        while(true) {
-            for(ProductionStep productionStep : productionLine.getProductionSteps()) {
+        while (true) {
+            for (ProductionStep productionStep : productionLine.getProductionSteps()) {
                 production.setCurrentProductionStep(productionStep);
-                while (productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
-                    try {
-                        Thread.sleep(productionStep.getRemainingRecoveryTime() * 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        //TODO: implement line stopping logic
-                    }
-                }
-                while (productionStep.getProductionStatus().equals(ProductionStatus.MAINTENANCE)) {
 
-                }
-            } 
-            
+                waitForRecovery(productionStep);
+                waitForMaintenance(productionLine);
+            }
+
         }
-        
+
     }
 
+    private boolean isFailureStep(ProductionStep productionStep) {
+        return Math.random() < productionStep.getFailureProbability();
+    }
 
+    private void dealWithFailure(ProductionStep productionStep) {
+        if (isFailureStep(productionStep)) {
+        }
+    }
+
+    private void waitForRecovery(ProductionStep productionStep) {
+
+        while (productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
+            try {
+                Thread.sleep(productionStep.getRemainingRecoveryTime() * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                // TODO: implement line stopping logic
+            }
+        }
+    }
+
+    private void waitForMaintenance(ProductionLine productionLine) {
+        while (productionLine.maxNecessaryMaintenanceTimeInMinutes() > 0) {
+            try {
+                Thread.sleep(productionLine.maxNecessaryMaintenanceTimeInMinutes() * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                // TODO: implement line stopping logic
+            }
+
+        }
+    }
 
 }
