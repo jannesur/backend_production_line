@@ -38,4 +38,17 @@ public class ProductionLineService {
         productionLineRepository.deleteById(uuid);
     }
 
+    public ProductionLine updateProductionLine(UUID uuid, ProductionLine productionLine) {
+        Optional<ProductionLine> optionalProductionLine = productionLineRepository.findById(uuid);
+        if(optionalProductionLine.isEmpty()) {
+            throw new ObjectNotFoundException("ProductionLine not found");
+        }
+        ProductionLine existingProductionLine = optionalProductionLine.get();
+        existingProductionLine.setName(productionLine.getName());
+        existingProductionLine.setSimulationStatus(productionLine.getSimulationStatus());
+        existingProductionLine.setStatus(productionLine.getStatus());
+        existingProductionLine.setVehicleModel(productionLine.getVehicleModel());
+        return productionLineRepository.save(existingProductionLine);
+    }
+
 }
