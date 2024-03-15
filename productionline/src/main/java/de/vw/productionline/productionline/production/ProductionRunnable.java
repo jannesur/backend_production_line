@@ -1,18 +1,25 @@
 package de.vw.productionline.productionline.production;
 
+import de.vw.productionline.productionline.exceptions.ProductionLineAlreadyRunningException;
+import de.vw.productionline.productionline.exceptions.ProductionLineIncompleteException;
 import de.vw.productionline.productionline.productionline.ProductionLine;
+import de.vw.productionline.productionline.productionline.SimulationStatus;
+import de.vw.productionline.productionline.productionline.Status;
+import de.vw.productionline.productionline.productionstep.ProductionStatus;
+import de.vw.productionline.productionline.productionstep.ProductionStep;
 
 public class ProductionRunnable implements Runnable {
     private Production production;
     private ProductionService productionService;
 
+    public ProductionRunnable(Production production, ProductionService productionService) {
+        this.production = production;
+        this.productionService = productionService;
+    }
+
     @Override
     public void run() {
-        // Is production in status READY? Only then go through next steps
-        // Set productionLine status to RUNNING
-
-        // loop through the production steps
-        // Set step to current ProductionStep
+    
         // loop through production steps and if recovery time != 0, reduce by one second
 
         // (as version 1: only check at the beginning of each next production step if
@@ -29,6 +36,37 @@ public class ProductionRunnable implements Runnable {
         // if thread is stopped/interrupted:
         // Set productionLine status to RUNNING
         // Set productionStep status to ...?
+
+        ProductionLine productionLine = production.getProductionLine();
+
+        if(!productionLine.getStatus().equals(Status.READY)) {
+            throw new ProductionLineIncompleteException();
+        } 
+        if (productionLine.getSimulationStatus().equals(SimulationStatus.RUNNING)) {
+            throw new ProductionLineAlreadyRunningException();
+        } 
+        productionLine.setSimulationStatus(SimulationStatus.RUNNING);
+
+        while(true) {
+            for(ProductionStep productionStep : productionLine.getProductionSteps()) {
+                production.setCurrentProductionStep(productionStep);
+                while (productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
+                    try {
+                        Thread.sleep(productionStep.getRemainingRecoveryTime() * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        //TODO: implement line stopping logic
+                    }
+                }
+                while (productionStep.getProductionStatus().equals(ProductionStatus.MAINTENANCE)) {
+
+                }
+            } 
+            
+        }
+        
     }
+
+
 
 }

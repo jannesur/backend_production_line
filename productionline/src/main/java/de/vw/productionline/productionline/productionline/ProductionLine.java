@@ -5,10 +5,12 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import de.vw.productionline.productionline.production.Production;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class ProductionLine {
@@ -21,6 +23,8 @@ public class ProductionLine {
     @OneToMany(mappedBy = "productionLine")
     @JsonManagedReference
     List<ProductionStep> productionSteps;
+    @OneToOne
+    private Production production;
 
     public ProductionLine(String name, Status status, SimulationStatus simulationStatus,
             VehicleModel vehicleModel) {

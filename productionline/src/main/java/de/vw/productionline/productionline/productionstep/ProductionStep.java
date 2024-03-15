@@ -83,6 +83,22 @@ public abstract class ProductionStep {
     public void setProductionLine(ProductionLine productionLine) {
         this.productionLine = productionLine;
     }
+    
+    public ProductionStatus getProductionStatus() {
+        return productionStatus;
+    }
+
+    public void setProductionStatus(ProductionStatus productionStatus) {
+        this.productionStatus = productionStatus;
+    }
+
+    public long getRemainingRecoveryTime() {
+        return remainingRecoveryTime;
+    }
+
+    public void setRemainingRecoveryTime(long remainingRecoveryTime) {
+        this.remainingRecoveryTime = remainingRecoveryTime;
+    }
 
     @Override
     public String toString() {
@@ -138,5 +154,4 @@ public abstract class ProductionStep {
             return false;
         return true;
     }
-
 }
