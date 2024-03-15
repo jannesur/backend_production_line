@@ -7,6 +7,7 @@ import de.vw.productionline.productionline.productionline.SimulationStatus;
 import de.vw.productionline.productionline.productionline.Status;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
+import de.vw.productionline.productionline.productionstep.RecoveryRunnable;
 
 public class ProductionRunnable implements Runnable {
     private Production production;
@@ -45,7 +46,12 @@ public class ProductionRunnable implements Runnable {
                 production.setCurrentProductionStep(productionStep);
 
                 waitForRecovery(productionStep);
+                dealWithFailure(productionStep);
                 waitForMaintenance(productionLine);
+
+                // do the stuff!
+
+                // start recovery for machine
             }
 
         }
@@ -58,11 +64,18 @@ public class ProductionRunnable implements Runnable {
 
     private void dealWithFailure(ProductionStep productionStep) {
         if (isFailureStep(productionStep)) {
+            startRecovery(productionStep);
         }
+        waitForRecovery(productionStep);
+    }
+
+    private void startRecovery(ProductionStep productionStep) {
+        Thread recoveryThread = new Thread(new RecoveryRunnable(productionStep));
+        recoveryThread.start();
     }
 
     private void waitForRecovery(ProductionStep productionStep) {
-
+        // need to make sure that
         while (productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
             try {
                 Thread.sleep(productionStep.getRemainingRecoveryTime() * 1000);

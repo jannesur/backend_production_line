@@ -11,6 +11,7 @@ public class RecoveryRunnable implements Runnable {
     @Override
     public void run() {
         this.productionStep.setProductionStatus(ProductionStatus.RECOVERY);
+        this.productionStep.setRemainingRecoveryTime(productionStep.getTimeToRecovery());
         while (this.productionStep.getRemainingRecoveryTime() > 0) {
             try {
                 Thread.sleep(1000);
