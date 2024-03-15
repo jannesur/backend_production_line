@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("employees")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class EmployeeController {
     private EmployeeService employeeService;
 
@@ -30,12 +32,12 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
-    @GetMapping("without-station")
+    @GetMapping("/without-station")
     public ResponseEntity<List<Employee>> getAllEmployeesWithoutStation() {
         return ResponseEntity.ok(employeeService.getAllEmployeesWithoutStation());
     }
 
-    @GetMapping("{uuid}")
+    @GetMapping("/{uuid}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "uuid") UUID uuid) {
         return ResponseEntity.ok(employeeService.getEmployeeById(uuid));
     }
@@ -45,7 +47,7 @@ public class EmployeeController {
         return new ResponseEntity<>(employeeService.createEmployee(employee), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("{uuid}")
+    @DeleteMapping("/{uuid}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "uuid") UUID uuid) {
         employeeService.deleteEmployee(uuid);
         return ResponseEntity.ok(null);

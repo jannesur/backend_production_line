@@ -2,6 +2,8 @@ package de.vw.productionline.productionline.productionstep;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -19,6 +21,7 @@ public abstract class ProductionStep {
     private double failureProbability;
     private long timeToRecovery;
     @ManyToOne
+    @JsonBackReference
     private ProductionLine productionLine;
 
     protected ProductionStep(String name, long duration, double failureProbability, long timeToRecovery,
