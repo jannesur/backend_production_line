@@ -11,7 +11,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
-import java.util.Objects;
 
 @Entity
 public class Employee {
@@ -34,8 +33,12 @@ public class Employee {
     public Employee() {
     }
 
-    public UUID getId() {
+    public UUID getUuid() {
         return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -89,4 +92,5 @@ public class Employee {
     public String toString() {
         return "Employee [id=" + uuid + ", name=" + name + "]" + station;
     }
+
 }
