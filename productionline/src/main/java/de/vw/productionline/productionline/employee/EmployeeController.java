@@ -32,12 +32,12 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
-    @GetMapping("without-station")
+    @GetMapping("/without-station")
     public ResponseEntity<List<Employee>> getAllEmployeesWithoutStation() {
         return ResponseEntity.ok(employeeService.getAllEmployeesWithoutStation());
     }
 
-    @GetMapping("{uuid}")
+    @GetMapping("/{uuid}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "uuid") UUID uuid) {
         return ResponseEntity.ok(employeeService.getEmployeeById(uuid));
     }
@@ -47,7 +47,7 @@ public class EmployeeController {
         return new ResponseEntity<>(employeeService.createEmployee(employee), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("{uuid}")
+    @DeleteMapping("/{uuid}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "uuid") UUID uuid) {
         employeeService.deleteEmployee(uuid);
         return ResponseEntity.ok(null);
