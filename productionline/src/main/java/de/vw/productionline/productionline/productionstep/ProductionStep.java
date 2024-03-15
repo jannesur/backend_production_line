@@ -40,6 +40,10 @@ public abstract class ProductionStep {
     protected ProductionStep() {
     }
 
+    public void reduceRecoveryTimeByOneMinute() {
+        this.remainingRecoveryTime--;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -83,7 +87,7 @@ public abstract class ProductionStep {
     public void setProductionLine(ProductionLine productionLine) {
         this.productionLine = productionLine;
     }
-    
+
     public ProductionStatus getProductionStatus() {
         return productionStatus;
     }
