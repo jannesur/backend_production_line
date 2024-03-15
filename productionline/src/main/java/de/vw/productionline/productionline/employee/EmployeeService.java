@@ -49,15 +49,18 @@ public class EmployeeService {
 
     public void deleteEmployee(UUID uuid) {
         Optional<Employee> employee = employeeRepository.findById(uuid);
+        int testsizebefore = employeeRepository.findAll().size();
         if (employee.isEmpty()) {
             throw new ObjectNotFoundException("Employee not found");
         }
         if (employee.get().getStation() != null) {
             Station station = employee.get().getStation();
-            station.getEmployees().remove(employee.get());
+            boolean test = station.getEmployees().remove(employee.get());
+            // employee.get().setStation(null);
             stationRepository.save(station);
         }
-        employeeRepository.deleteById(uuid);
+        employeeRepository.delete(employee.get());
+        int testsizeafter = employeeRepository.findAll().size();
     }
 
     public Employee updatEmployee(UUID uuid, Employee employee) {

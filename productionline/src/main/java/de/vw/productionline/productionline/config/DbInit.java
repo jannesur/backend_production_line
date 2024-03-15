@@ -109,7 +109,7 @@ public class DbInit {
         logger.info("Assigning employees to stations.");
         Set<Employee> employees = new HashSet<>();
 
-        Employee printEmployee = employeeRepository.getByName("Janne").get();
+        Employee printEmployee = employeeRepository.findByName("Janne").get();
         Station printStation = stationRepository.getByName("Painting").get();
 
         employees.add(printEmployee);

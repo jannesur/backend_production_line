@@ -10,11 +10,12 @@ import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 
 @Entity
 public class Station extends ProductionStep {
-    @OneToMany(mappedBy = "station", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "station", fetch = FetchType.EAGER)
     @JsonManagedReference
     private Set<Employee> employees = new HashSet<>();
 
