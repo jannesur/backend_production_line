@@ -1,6 +1,8 @@
 package de.vw.productionline.productionline.config;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import de.vw.productionline.productionline.employee.EmployeeRepository;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.ProductionLineRepository;
 import de.vw.productionline.productionline.productionline.VehicleModel;
+import de.vw.productionline.productionline.productionstep.ProductionStep;
 import de.vw.productionline.productionline.robot.Robot;
 import de.vw.productionline.productionline.robot.RobotRepository;
 import de.vw.productionline.productionline.station.Station;
@@ -109,23 +112,36 @@ public class DbInit {
         logger.info("Assigning employees to stations.");
         Set<Employee> employees = new HashSet<>();
 
-        Employee printEmployee = employeeRepository.getByName("Janne").get();
-        Station printStation = stationRepository.getByName("Painting").get();
+        Employee paintEmployee = employeeRepository.findByName("Janne").get();
+        Station paintStation = stationRepository.findByName("Painting").get();
 
-        employees.add(printEmployee);
-        printStation.setEmployees(employees);
+        employees.add(paintEmployee);
+        paintStation.setEmployees(employees);
 
-        printEmployee.setStation(printStation);
-        Employee e = employeeRepository.save(printEmployee);
+        paintEmployee.setStation(paintStation);
+        Employee e = employeeRepository.save(paintEmployee);
         System.out.println(e);
 
-        Station s = stationRepository.save(printStation);
+        Station s = stationRepository.save(paintStation);
         System.out.println(s);
     }
 
     private void assignStationsAndRobotsToProductionLines() {
         logger.info("Assigning stations and robots to production lines.");
+        List<ProductionStep> productionSteps = new ArrayList();
 
+        ProductionLine productionLine2 = productionLineRepository.findByName("Production line 2").get();
+        Robot paintRobot = robotRepository.findByName("Painting Robot").get();
+        paintRobot.setProductionLine(productionLine2);
+        productionSteps.add(paintRobot);
+        Station paintStation = stationRepository.findByName("Painting").get();
+        paintStation.setProductionLine(productionLine2);
+        productionSteps.add(paintStation);
+
+        robotRepository.save(paintRobot);
+        stationRepository.save(paintStation);
+        productionLine2.setProductionSteps(productionSteps);
+        productionLineRepository.save(productionLine2);
     }
 
 }

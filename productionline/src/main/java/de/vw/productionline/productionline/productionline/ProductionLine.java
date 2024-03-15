@@ -3,6 +3,8 @@ package de.vw.productionline.productionline.productionline;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,6 +19,7 @@ public class ProductionLine {
     private SimulationStatus simulationStatus;
     private VehicleModel vehicleModel;
     @OneToMany(mappedBy = "productionLine")
+    @JsonManagedReference
     List<ProductionStep> productionSteps;
 
     public ProductionLine(String name, Status status, SimulationStatus simulationStatus,
@@ -72,6 +75,14 @@ public class ProductionLine {
 
     public void setVehicleModel(VehicleModel vehicleModel) {
         this.vehicleModel = vehicleModel;
+    }
+
+    public List<ProductionStep> getProductionSteps() {
+        return this.productionSteps;
+    }
+
+    public void setProductionSteps(List<ProductionStep> productionSteps) {
+        this.productionSteps = productionSteps;
     }
 
     @Override
