@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import de.vw.productionline.productionline.employee.Employee;
 import de.vw.productionline.productionline.employee.EmployeeRepository;
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class StationService {
@@ -21,22 +20,6 @@ public class StationService {
         this.stationRepository = stationRepository;
         this.employeeRepository = employeeRepository;
     }
-
-    // @PostConstruct
-    // private void initializeData() {
-    //     System.out.println("Initializing stations");
-    //     Station station1 = new Station("Painting", 10l, 0.5, 15);
-    //     Station station2 = new Station("Wheel", 1l, 0.01, 10);
-    //     Station station3 = new Station("Tires", 5l, 0.05, 150);
-    //     Station station4 = new Station("Body parts", 15l, 0.1, 10);
-    //     Station station5 = new Station("Other stuff", 100l, 0.2, 1);
-
-    //     stationRepository.save(station1);
-    //     stationRepository.save(station2);
-    //     stationRepository.save(station3);
-    //     stationRepository.save(station4);
-    //     stationRepository.save(station5);
-    // }
 
     public List<Station> getAllStations() {
         return this.stationRepository.findAll();
