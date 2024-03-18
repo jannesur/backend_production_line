@@ -32,4 +32,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleProductionLineIncompleteException(ProductionLineIncompleteException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
+
+    @ExceptionHandler(ProductionLineNotRunningException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleProductionLineNotRunningException(ProductionLineNotRunningException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }

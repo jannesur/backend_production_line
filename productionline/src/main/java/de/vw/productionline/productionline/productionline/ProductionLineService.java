@@ -1,10 +1,12 @@
 package de.vw.productionline.productionline.productionline;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import java.util.UUID;
-
+import de.vw.productionline.productionline.exceptions.ProductionLineIncompleteException;
+import de.vw.productionline.productionline.exceptions.ProductionLineNotRunningException;
+import de.vw.productionline.productionline.production.Production;
+import de.vw.productionline.productionline.production.ProductionRunnable;
+import de.vw.productionline.productionline.production.ProductionService;
 import org.springframework.stereotype.Service;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
@@ -15,6 +17,7 @@ import de.vw.productionline.productionline.productionstep.ProductionStep;
 public class ProductionLineService {
 
     private ProductionLineRepository productionLineRepository;
+    private Map<Production, Thread> productionThreads = new HashMap<>();
 
     public ProductionLineService(ProductionLineRepository productionLineRepository) {
         this.productionLineRepository = productionLineRepository;
@@ -51,6 +54,22 @@ public class ProductionLineService {
         existingProductionLine.setStatus(productionLine.getStatus());
         existingProductionLine.setVehicleModel(productionLine.getVehicleModel());
         return productionLineRepository.save(existingProductionLine);
+    }
+
+    public void startProduction(UUID uuid) {
+        Production production = new Production(getProductionLineById(uuid));
+        Thread productionThread = new Thread(new ProductionRunnable(production));
+        productionThread.start();
+        productionThreads.put(production, productionThread);
+    }
+
+    public void stopProduction(UUID uuid) {
+        Production production = new Production(getProductionLineById(uuid));
+        Thread productionThread = this.productionThreads.get(production);
+        if (productionThread == null) {
+            throw new ProductionLineNotRunningException();
+        }
+        productionThread.interrupt();
     }
 
 }

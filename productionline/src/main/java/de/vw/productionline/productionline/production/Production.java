@@ -27,6 +27,16 @@ public class Production {
         this.currentProductionStep = currentProductionStep;
     }
 
+    public Production(ProductionLine productionLine) {
+        this(productionLine,null,null,0L,null);
+    }
+
+    public Production() {}
+
+    public void incrementProducedCars() {
+        this.numberProducedCars++;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
