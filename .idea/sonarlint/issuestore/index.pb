@@ -37,3 +37,6 @@ iproductionline/src/main/java/de/vw/productionline/productionline/exceptions/Pro
 rproductionline/src/main/java/de/vw/productionline/productionline/exceptions/ProductionLineIncompleteException.java,3/6/36b6402388aa0d7f008e1ca236f1c9292459cfe3
 ¢
 rproductionline/src/main/java/de/vw/productionline/productionline/exceptions/ProductionLineNotRunningException.java,9/6/96bb9a58f013de5ece7617622683059258e24be9
+:
+
+.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
