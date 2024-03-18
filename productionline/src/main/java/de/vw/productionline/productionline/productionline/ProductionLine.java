@@ -9,6 +9,8 @@ import de.vw.productionline.productionline.production.Production;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -17,10 +19,18 @@ import jakarta.persistence.OneToOne;
 public class ProductionLine {
     @Id
     private UUID uuid = UUID.randomUUID();
+
     private String name;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Enumerated(EnumType.STRING)
     private SimulationStatus simulationStatus;
+
+    @Enumerated(EnumType.STRING)
     private VehicleModel vehicleModel;
+
     @OneToMany(mappedBy = "productionLine")
     @JsonManagedReference
     List<ProductionStep> productionSteps;

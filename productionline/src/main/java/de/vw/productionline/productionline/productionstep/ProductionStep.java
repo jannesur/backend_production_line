@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import de.vw.productionline.productionline.productionline.ProductionLine;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
@@ -21,7 +22,7 @@ public abstract class ProductionStep {
     private long durationInMinutes;
     private double failureProbability;
     private long timeToRecovery;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JsonBackReference
     private ProductionLine productionLine;
 
