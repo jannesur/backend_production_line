@@ -1,5 +1,8 @@
 package de.vw.productionline.productionline.production;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.vw.productionline.productionline.exceptions.ProductionLineAlreadyRunningException;
 import de.vw.productionline.productionline.exceptions.ProductionLineIncompleteException;
 import de.vw.productionline.productionline.productionline.ProductionLine;
@@ -11,37 +14,50 @@ import de.vw.productionline.productionline.productionstep.RecoveryRunnable;
 
 public class ProductionRunnable implements Runnable {
     private Production production;
-    private ProductionService productionService;
+    private Logger logger = LoggerFactory.getLogger(ProductionRunnable.class);
+    private String threadName = Thread.currentThread().getName();
 
-    public ProductionRunnable(Production production, ProductionService productionService) {
+    public ProductionRunnable(Production production) {
         this.production = production;
-        this.productionService = productionService;
     }
 
     @Override
     public void run() {
-
-        // check if step is failure step
-        // set status to RECOVERY
-        // if yes -> wait one additional recovery time
-
-        // every 5 seconds save Production to the database
+        // TODO: use pre-destroy annotation to ensure that data is saved to database
+        // TODO if TIME! every 5 seconds save Production to the database (in case the
+        // server fails)
 
         // if thread is stopped/interrupted:
         // Set productionLine status to RUNNING
         // Set productionStep status to ...?
 
+        logger.info(String.format("Started thread %s", threadName));
+
         ProductionLine productionLine = production.getProductionLine();
 
         if (!productionLine.getStatus().equals(Status.READY)) {
-            throw new ProductionLineIncompleteException();
+            synchronized (this) {
+                logger.info(String.format("Thread %s: production line %s not ready", this.threadName,
+                        productionLine.getName()));
+                throw new ProductionLineIncompleteException();
+            }
         }
-        if (productionLine.getSimulationStatus().equals(SimulationStatus.RUNNING)) {
-            throw new ProductionLineAlreadyRunningException();
-        }
-        productionLine.setSimulationStatus(SimulationStatus.RUNNING);
 
-        while (true) {
+        if (productionLine.getSimulationStatus().equals(SimulationStatus.RUNNING)) {
+            synchronized (this) {
+                logger.info(String.format("Thread %s: production line %s already running", this.threadName,
+                        productionLine.getName()));
+                throw new ProductionLineAlreadyRunningException();
+            }
+        }
+
+        synchronized (this) {
+            productionLine.setSimulationStatus(SimulationStatus.RUNNING);
+            logger.info(String.format("Thread %s: set status of production line %s to RUNNING", this.threadName,
+                    productionLine.getName()));
+        }
+
+        while (!Thread.interrupted()) {
             for (ProductionStep productionStep : productionLine.getProductionSteps()) {
                 production.setCurrentProductionStep(productionStep);
 
@@ -49,13 +65,27 @@ public class ProductionRunnable implements Runnable {
                 dealWithFailure(productionStep);
                 waitForMaintenance(productionLine);
 
-                // do the stuff!
+                long remainingProductionTime = productionStep.getDurationInMinutes();
+                while (remainingProductionTime > 0) {
+                    try {
+                        remainingProductionTime--;
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        // TODO: implement line stopping logic
+                    }
+                }
 
-                // start recovery for machine
+                startRecovery(productionStep);
             }
-
         }
 
+        // THREAD WAS INTERRUPTED
+
+    }
+
+    private void cleanUp() {
+        // TODO -> save everything so that the production line can be stopped
     }
 
     private boolean isFailureStep(ProductionStep productionStep) {
@@ -70,6 +100,7 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void startRecovery(ProductionStep productionStep) {
+        // TODO -> is it a bad idea to keep creating "throw-away" threads?
         Thread recoveryThread = new Thread(new RecoveryRunnable(productionStep));
         recoveryThread.start();
     }
