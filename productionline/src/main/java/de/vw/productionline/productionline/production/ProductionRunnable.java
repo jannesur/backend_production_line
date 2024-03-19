@@ -96,9 +96,11 @@ public class ProductionRunnable implements Runnable {
         // TODO -> save everything so that the production line can be stopped
         // update statuses (all production steps need to go back to "waiting" and
         // production line needs to go to "stopped")
-        this.production.setEndTime(LocalDateTime.now());
+
         logger.info(String.format("%s: clean up production line %s", this.threadName,
                 this.production.getProductionLine().getName()));
+        this.production.setEndTime(LocalDateTime.now());
+        // START HERE
     }
 
     private boolean isFailureStep(ProductionStep productionStep) {
@@ -122,6 +124,9 @@ public class ProductionRunnable implements Runnable {
         long remainingProductionTime = productionStep.getDurationInMinutes();
 
         if (this.production.getNumberProducedCars() == 0 && productionStep instanceof Robot) {
+            logger.info(
+                    String.format("%s: first time robot %s in production -- start maintenance cycle", this.threadName,
+                            productionStep.getName()));
             startMaintenanceCountdown((Robot) productionStep);
         }
 
