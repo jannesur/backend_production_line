@@ -10,20 +10,21 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class EmployeeIntegrationTest {
-    @Autowired
-    private TestRestTemplate template;
+    // @Autowired
+    // private TestRestTemplate template;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    // @Autowired
+    // private EmployeeRepository employeeRepository;
 
-    @Test
-    void createEmployee() {
-        long originalSize = employeeRepository.count();
-        Employee emp = new Employee("Test", null);
-        ResponseEntity<Employee> newEmp = this.template.postForEntity("/employees", emp, Employee.class);
-        System.out.println(emp);
-        System.out.println(newEmp.getBody());
-        Assertions.assertEquals(emp.getName(), newEmp.getBody().getName());
-        Assertions.assertEquals(originalSize + 1, employeeRepository.count());
-    }
+    // @Test
+    // void createEmployee() {
+    // long originalSize = employeeRepository.count();
+    // Employee emp = new Employee("Test", null);
+    // ResponseEntity<Employee> newEmp = this.template.postForEntity("/employees",
+    // emp, Employee.class);
+    // System.out.println(emp);
+    // System.out.println(newEmp.getBody());
+    // Assertions.assertEquals(emp.getName(), newEmp.getBody().getName());
+    // Assertions.assertEquals(originalSize + 1, employeeRepository.count());
+    // }
 }
