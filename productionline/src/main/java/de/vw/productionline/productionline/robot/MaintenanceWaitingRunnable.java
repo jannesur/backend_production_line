@@ -1,9 +1,9 @@
-package de.vw.productionline.productionline.productionstep;
+package de.vw.productionline.productionline.robot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.vw.productionline.productionline.robot.Robot;
+import de.vw.productionline.productionline.productionstep.ProductionStatus;
 
 public class MaintenanceWaitingRunnable implements Runnable {
     private Robot robot;
