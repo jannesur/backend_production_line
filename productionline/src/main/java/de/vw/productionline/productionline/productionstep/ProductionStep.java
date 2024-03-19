@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -28,6 +30,7 @@ public abstract class ProductionStep {
     @JsonBackReference
     private ProductionLine productionLine;
 
+    @Enumerated(EnumType.STRING)
     private ProductionStatus productionStatus;
     private long remainingRecoveryTime;
 
