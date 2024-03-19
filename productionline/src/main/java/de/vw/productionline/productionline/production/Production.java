@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.VehicleModel;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
@@ -29,7 +32,8 @@ public class Production {
     private LocalDateTime endTime;
     private long numberProducedCars;
 
-    @OneToMany(mappedBy = "production")
+    @OneToMany(mappedBy = "production", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<ProductionTime> productionTimes = new ArrayList<>();
 
     @Transient
