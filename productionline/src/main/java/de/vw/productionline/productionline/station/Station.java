@@ -19,20 +19,20 @@ public class Station extends ProductionStep {
     @JsonManagedReference
     private Set<Employee> employees = new HashSet<>();
 
-    public Station(String name, long duration, double failureProbability, long timeToRecovery,
+    public Station(String name, long duration, double failureProbability, long timeToRecovery, int step,
             ProductionLine productionLine, Set<Employee> employees) {
-        super(name, duration, failureProbability, timeToRecovery, productionLine);
+        super(name, duration, failureProbability, timeToRecovery, step, productionLine);
         this.employees = employees;
     }
 
-    public Station(String name, long duration, double failureProbability, long timeToRecovery,
+    public Station(String name, long duration, double failureProbability, long timeToRecovery, int step,
             Set<Employee> employees) {
-        super(name, duration, failureProbability, timeToRecovery, null);
+        super(name, duration, failureProbability, timeToRecovery, step, null);
         this.employees = employees;
     }
 
     public Station(String name, long duration, double failureProbability, long timeToRecovery) {
-        this(name, duration, failureProbability, timeToRecovery, null);
+        this(name, duration, failureProbability, timeToRecovery, 0, null);
     }
 
     public Station() {
