@@ -59,6 +59,18 @@ public class ProductionLine {
                 .mapToLong(e -> e.getRemainingRecoveryTime()).max().orElse(0);
     }
 
+    public void setAllProductionStepStatus(ProductionStatus productionStatus) {
+        for (ProductionStep productionStep : this.productionSteps) {
+            productionStep.setProductionStatus(productionStatus);
+        }
+    }
+
+    public void resetAllProductionStepRecoveryTimes() {
+        for (ProductionStep productionStep : this.productionSteps) {
+            productionStep.setRemainingRecoveryTime(0l);
+        }
+    }
+
     public UUID getUuid() {
         return this.uuid;
     }

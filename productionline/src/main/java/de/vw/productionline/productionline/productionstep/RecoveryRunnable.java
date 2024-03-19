@@ -3,15 +3,24 @@ package de.vw.productionline.productionline.productionstep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.vw.productionline.productionline.production.Production;
+import de.vw.productionline.productionline.production.ProductionTime;
+import de.vw.productionline.productionline.production.ProductionTimeType;
+
 public class RecoveryRunnable implements Runnable {
 
     private ProductionStep productionStep;
-    private Logger logger = LoggerFactory.getLogger(RecoveryRunnable.class);
+    private boolean isFailureRecovery;
     private String threadName;
+    private Production production;
+    private Logger logger = LoggerFactory.getLogger(RecoveryRunnable.class);
 
-    public RecoveryRunnable(ProductionStep productionStep, String threadName) {
+    public RecoveryRunnable(ProductionStep productionStep, boolean isFailureRecovery, String threadName,
+            Production production) {
         this.productionStep = productionStep;
+        this.isFailureRecovery = isFailureRecovery;
         this.threadName = threadName;
+        this.production = production;
     }
 
     @Override
@@ -46,6 +55,16 @@ public class RecoveryRunnable implements Runnable {
             }
         }
         this.productionStep.setProductionStatus(ProductionStatus.WAITING);
+
+        if (this.isFailureRecovery) {
+            logger.info(String.format("%s: saving failure time for step %s",
+                    this.threadName,
+                    productionStep.getName()));
+            ProductionTime productionTime = new ProductionTime(ProductionTimeType.FAILURE,
+                    productionStep.getTimeToRecovery(), this.production);
+            this.production.addProductionTime(productionTime);
+        }
+
     }
 
 }
