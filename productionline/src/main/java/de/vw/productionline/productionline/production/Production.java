@@ -1,28 +1,40 @@
 package de.vw.productionline.productionline.production;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import de.vw.productionline.productionline.productionline.ProductionLine;
+import de.vw.productionline.productionline.productionline.VehicleModel;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 
 @Entity
 public class Production {
+
     @Id
     private UUID uuid = UUID.randomUUID();
-    // TODO: make productionLine transient because we don't want to have it as a
-    // field in Production
-    // we need to save the attributes so that they are archived
-    // for example car model ...
-    @OneToOne(mappedBy = "production")
+
+    @Transient
     private ProductionLine productionLine;
+
+    private UUID productionLineUuid;
+    private String productionLineName;
+    private VehicleModel vehicleModel;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private long numberProducedCars;
+
+    @OneToMany(mappedBy = "production", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<ProductionTime> productionTimes = new ArrayList<>();
 
     @Transient
     private ProductionStep currentProductionStep;
@@ -30,6 +42,9 @@ public class Production {
     public Production(ProductionLine productionLine, LocalDateTime startTime, LocalDateTime endTime,
             long numberProducedCars, ProductionStep currentProductionStep) {
         this.productionLine = productionLine;
+        this.productionLineUuid = productionLine.getUuid();
+        this.productionLineName = productionLine.getName();
+        this.vehicleModel = productionLine.getVehicleModel();
         this.startTime = startTime;
         this.endTime = endTime;
         this.numberProducedCars = numberProducedCars;
@@ -59,6 +74,30 @@ public class Production {
         this.productionLine = productionLine;
     }
 
+    public UUID getProductionLineUuid() {
+        return productionLineUuid;
+    }
+
+    public void setProductionLineUuid(UUID productionLineUuid) {
+        this.productionLineUuid = productionLineUuid;
+    }
+
+    public String getProductionLineName() {
+        return productionLineName;
+    }
+
+    public void setProductionLineName(String productionLineName) {
+        this.productionLineName = productionLineName;
+    }
+
+    public VehicleModel getVehicleModel() {
+        return vehicleModel;
+    }
+
+    public void setVehicleModel(VehicleModel vehicleModel) {
+        this.vehicleModel = vehicleModel;
+    }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }
@@ -83,6 +122,14 @@ public class Production {
         this.numberProducedCars = numberProducedCars;
     }
 
+    public List<ProductionTime> getProductionTimes() {
+        return productionTimes;
+    }
+
+    public void setProductionTimes(List<ProductionTime> productionTimes) {
+        this.productionTimes = productionTimes;
+    }
+
     public ProductionStep getCurrentProductionStep() {
         return currentProductionStep;
     }
@@ -93,9 +140,9 @@ public class Production {
 
     @Override
     public String toString() {
-        return "Production [uuid=" + uuid + ", productionLine=" + productionLine + ", startTime=" + startTime
-                + ", endTime=" + endTime + ", numberProducedCars=" + numberProducedCars + ", currentProductionStep="
-                + currentProductionStep + "]";
+        return "Production [uuid=" + uuid + ", productionLineUuid=" + productionLineUuid + ", productionLineName="
+                + productionLineName + ", vehicleModel=" + vehicleModel + ", startTime=" + startTime + ", endTime="
+                + endTime + ", numberProducedCars=" + numberProducedCars + "]";
     }
 
 }

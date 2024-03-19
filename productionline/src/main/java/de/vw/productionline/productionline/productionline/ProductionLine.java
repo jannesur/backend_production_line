@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import de.vw.productionline.productionline.production.Production;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
@@ -14,7 +13,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class ProductionLine {
@@ -35,8 +33,6 @@ public class ProductionLine {
     @OneToMany(mappedBy = "productionLine", fetch = FetchType.EAGER)
     @JsonManagedReference
     List<ProductionStep> productionSteps;
-    @OneToOne
-    private Production production;
 
     public ProductionLine(String name, Status status, SimulationStatus simulationStatus,
             VehicleModel vehicleModel) {
@@ -59,7 +55,7 @@ public class ProductionLine {
 
     public long maxNecessaryMaintenanceTimeInMinutes() {
         return this.productionSteps.stream()
-                .filter(e -> e.getProductionStatus().equals(ProductionStatus.MAINTENANCE))
+                .filter(e -> e.getProductionStatus().equals(ProductionStatus.NEEDS_MAINTENANCE))
                 .mapToLong(e -> e.getRemainingRecoveryTime()).max().orElse(0);
     }
 
