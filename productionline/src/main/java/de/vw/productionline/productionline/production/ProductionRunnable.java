@@ -23,14 +23,17 @@ public class ProductionRunnable implements Runnable {
     private ProductionLine productionLine;
     private String threadName;
     private long threadParentNumber;
+    private ProductionTimeService productionTimeService;
     private long threadCount = 0l;
     private Logger logger = LoggerFactory.getLogger(ProductionRunnable.class);
 
-    public ProductionRunnable(Production production, String threadName, long threadParentNumber) {
+    public ProductionRunnable(Production production, String threadName, long threadParentNumber,
+            ProductionTimeService productionTimeService) {
         this.production = production;
         this.productionLine = production.getProductionLine();
         this.threadName = threadName;
         this.threadParentNumber = threadParentNumber;
+        this.productionTimeService = productionTimeService;
     }
 
     @Override
@@ -156,7 +159,10 @@ public class ProductionRunnable implements Runnable {
             }
         }
 
-        // TODO: SAVE THE PRODUCTION TIME
+        ProductionTime productionTime = new ProductionTime(ProductionTimeType.PRODUCTION,
+                productionStep.getDurationInMinutes(), this.production);
+        this.productionTimeService.saveProductionTime(productionTime);
+
     }
 
     private void startRecovery(ProductionStep productionStep, boolean isFailureRecovery) {
@@ -167,7 +173,9 @@ public class ProductionRunnable implements Runnable {
         this.threadCount++;
         String recoveryThreadName = String.format("%s subthread %d.%d - recovery",
                 this.threadName, this.threadParentNumber, this.threadCount);
-        Thread recoveryThread = new Thread(new RecoveryRunnable(productionStep, isFailureRecovery, recoveryThreadName),
+        Thread recoveryThread = new Thread(
+                new RecoveryRunnable(productionStep, isFailureRecovery, recoveryThreadName, this.production,
+                        this.productionTimeService),
                 recoveryThreadName);
         synchronized (this) {
             logger.info(String.format("%s: start recovery for production step %s", this.threadName,
@@ -213,7 +221,8 @@ public class ProductionRunnable implements Runnable {
             String maintThreadName = String.format("%s subthread %d.%d - maintenance", this.threadName,
                     this.threadParentNumber,
                     this.threadCount);
-            Thread performMaintenanceThread = new Thread(new MaintenanceRunnable(robot, maintThreadName),
+            Thread performMaintenanceThread = new Thread(
+                    new MaintenanceRunnable(robot, this.production, maintThreadName, this.productionTimeService),
                     maintThreadName);
             performMaintenanceThread.start();
         }
