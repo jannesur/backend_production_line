@@ -12,16 +12,16 @@ public class Robot extends ProductionStep {
     @Positive(message = "Maintenance time in minutes must be greater than 0.")
     private long maintenanceTimeInMinutes;
 
-    public Robot(String name, long duration, double failureProbability, long timeToRecovery,
+    public Robot(String name, long duration, double failureProbability, long timeToRecovery, int step,
             ProductionLine productionLine, long maintenanceCycleInMinutes, long maintenanceTimeInMinutes) {
-        super(name, duration, failureProbability, timeToRecovery, productionLine);
+        super(name, duration, failureProbability, timeToRecovery, step, productionLine);
         this.maintenanceCycleInMinutes = maintenanceCycleInMinutes;
         this.maintenanceTimeInMinutes = maintenanceTimeInMinutes;
     }
 
     public Robot(String name, long duration, double failureProbability, long timeToRecovery,
             long maintenanceCycleInMinutes, long maintenanceTimeInMinutes) {
-        this(name, duration, failureProbability, timeToRecovery, null, maintenanceCycleInMinutes,
+        this(name, duration, failureProbability, timeToRecovery, 0, null, maintenanceCycleInMinutes,
                 maintenanceTimeInMinutes);
     }
 

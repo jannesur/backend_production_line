@@ -22,12 +22,25 @@ public abstract class ProductionStep {
     private long durationInMinutes;
     private double failureProbability;
     private long timeToRecovery;
+    private int step;
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JsonBackReference
     private ProductionLine productionLine;
 
     private ProductionStatus productionStatus;
     private long remainingRecoveryTime;
+
+    protected ProductionStep(String name, long duration, double failureProbability, long timeToRecovery,
+            int step, ProductionLine productionLine) {
+        this.name = name;
+        this.durationInMinutes = duration;
+        this.failureProbability = failureProbability;
+        this.timeToRecovery = timeToRecovery;
+        this.step = step;
+        this.productionLine = productionLine;
+        this.productionStatus = ProductionStatus.WAITING;
+    }
 
     protected ProductionStep(String name, long duration, double failureProbability, long timeToRecovery,
             ProductionLine productionLine) {
@@ -80,6 +93,14 @@ public abstract class ProductionStep {
 
     public void setTimeToRecovery(long timeToRecovery) {
         this.timeToRecovery = timeToRecovery;
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
     }
 
     public ProductionLine getProductionLine() {
@@ -160,4 +181,5 @@ public abstract class ProductionStep {
             return false;
         return true;
     }
+
 }
