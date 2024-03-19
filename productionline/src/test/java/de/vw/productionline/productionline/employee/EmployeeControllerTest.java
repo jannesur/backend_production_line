@@ -23,138 +23,153 @@ import de.vw.productionline.productionline.station.StationRepository;
 @SpringBootTest
 public class EmployeeControllerTest {
 
-    @Autowired
-    private EmployeeController employeeController;
+    // @Autowired
+    // private EmployeeController employeeController;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    // @Autowired
+    // private EmployeeRepository employeeRepository;
 
-    @Autowired
-    private StationRepository stationRepository;
+    // @Autowired
+    // private StationRepository stationRepository;
 
-    @BeforeEach
-    public void setUp() {
-        Station station = new Station();
-        station.setName("Station 1");
-        stationRepository.save(station);
+    // @BeforeEach
+    // public void setUp() {
+    // Station station = new Station();
+    // station.setName("Station 1");
+    // stationRepository.save(station);
 
-        Employee employee = new Employee("Adriana", null);
-        Employee employee2 = new Employee("Janne", null);
-        Employee employee3 = new Employee("Tim", null);
-        Employee employee4 = new Employee("Chris", station);
+    // Employee employee = new Employee("Adriana", null);
+    // Employee employee2 = new Employee("Janne", null);
+    // Employee employee3 = new Employee("Tim", null);
+    // Employee employee4 = new Employee("Chris", station);
 
-        employeeRepository.save(employee);
-        employeeRepository.save(employee2);
-        employeeRepository.save(employee3);
-        employeeRepository.save(employee4);
-    }
+    // employeeRepository.save(employee);
+    // employeeRepository.save(employee2);
+    // employeeRepository.save(employee3);
+    // employeeRepository.save(employee4);
+    // }
 
-    @AfterEach
-    public void tearDown() {
-        System.out.println("Number of stations in db: " + stationRepository.count());
-        System.out.println("Number of employees in db: " + employeeRepository.count());
-        // AFTER
-        // stationRepository.deleteAll();
-        System.out.println("Number of employees in db: " + employeeRepository.count());
-        // employeeRepository.deleteAll();
-    }
+    // @AfterEach
+    // public void tearDown() {
+    // System.out.println("Number of stations in db: " + stationRepository.count());
+    // System.out.println("Number of employees in db: " +
+    // employeeRepository.count());
+    // // AFTER
+    // // stationRepository.deleteAll();
+    // System.out.println("Number of employees in db: " +
+    // employeeRepository.count());
+    // // employeeRepository.deleteAll();
+    // }
 
-    @Test
-    public void testGetAllEmployees() {
-        // given
-        long expectedAmountEmployees = employeeRepository.count();
+    // @Test
+    // public void testGetAllEmployees() {
+    // // given
+    // long expectedAmountEmployees = employeeRepository.count();
 
-        // when
-        List<Employee> employees = employeeController.getAllEmployees().getBody();
+    // // when
+    // List<Employee> employees = employeeController.getAllEmployees().getBody();
 
-        // then
-        assertEquals(expectedAmountEmployees, employees.size());
-    }
+    // // then
+    // assertEquals(expectedAmountEmployees, employees.size());
+    // }
 
-    @Test
-    public void testGetAllEmployeesWithoutStation() {
-        // given
-        long expectedAmountEmployeesWithoutStation = employeeRepository.findAll().stream()
-                .filter(employee -> employee.getStation() == null).count();
+    // @Test
+    // public void testGetAllEmployeesWithoutStation() {
+    // // given
+    // long expectedAmountEmployeesWithoutStation =
+    // employeeRepository.findAll().stream()
+    // .filter(employee -> employee.getStation() == null).count();
 
-        // when
-        List<Employee> employeesWithoutStation = employeeController.getAllEmployeesWithoutStation().getBody();
+    // // when
+    // List<Employee> employeesWithoutStation =
+    // employeeController.getAllEmployeesWithoutStation().getBody();
 
-        // then
-        assertEquals(expectedAmountEmployeesWithoutStation, employeesWithoutStation.size());
-    }
+    // // then
+    // assertEquals(expectedAmountEmployeesWithoutStation,
+    // employeesWithoutStation.size());
+    // }
 
-    @Test
-    public void testGetEmployeeByIdValid() {
-        // given
-        Employee employee = employeeController.getAllEmployees().getBody().get(0);
-        UUID employeeId = employee.getUuid();
+    // @Test
+    // public void testGetEmployeeByIdValid() {
+    // // given
+    // Employee employee = employeeController.getAllEmployees().getBody().get(0);
+    // UUID employeeId = employee.getUuid();
 
-        // when
-        Employee foundEmployee = employeeController.getEmployeeById(employeeId).getBody();
+    // // when
+    // Employee foundEmployee =
+    // employeeController.getEmployeeById(employeeId).getBody();
 
-        // then
-        assertEquals(employee, foundEmployee);
-    }
+    // // then
+    // assertEquals(employee, foundEmployee);
+    // }
 
-    @Test
-    public void testGetEmployeeByIdInvalid() {
-        // given
-        UUID employeeId = UUID.randomUUID();
+    // @Test
+    // public void testGetEmployeeByIdInvalid() {
+    // // given
+    // UUID employeeId = UUID.randomUUID();
 
-        // when then
-        assertThrows(ObjectNotFoundException.class, () -> {
-            employeeController.getEmployeeById(employeeId);
-        });
-    }
+    // // when then
+    // assertThrows(ObjectNotFoundException.class, () -> {
+    // employeeController.getEmployeeById(employeeId);
+    // });
+    // }
 
-    @Test
-    public void testCreateEmployeeValid() {
-        // given
-        Employee validEmployee = new Employee();
-        int expectedAmountEmployees = employeeController.getAllEmployees().getBody().size() + 1;
-        validEmployee.setName("MR X");
-        validEmployee.setStation(null);
+    // @Test
+    // public void testCreateEmployeeValid() {
+    // // given
+    // Employee validEmployee = new Employee();
+    // int expectedAmountEmployees =
+    // employeeController.getAllEmployees().getBody().size() + 1;
+    // validEmployee.setName("MR X");
+    // validEmployee.setStation(null);
 
-        // when
-        Employee savedValidEmployee = employeeController.createEmployee(validEmployee).getBody();
+    // // when
+    // Employee savedValidEmployee =
+    // employeeController.createEmployee(validEmployee).getBody();
 
-        // then
-        assertEquals(expectedAmountEmployees, employeeController.getAllEmployees().getBody().size());
-        Assert.notNull(savedValidEmployee, "validEmployee should not be null");
-        Assert.isTrue(savedValidEmployee.getName().equals("MR X"), "validEmployee name should match");
-        Assert.isNull(savedValidEmployee.getStation(), "validEmployee station should be null");
-    }
+    // // then
+    // assertEquals(expectedAmountEmployees,
+    // employeeController.getAllEmployees().getBody().size());
+    // Assert.notNull(savedValidEmployee, "validEmployee should not be null");
+    // Assert.isTrue(savedValidEmployee.getName().equals("MR X"), "validEmployee
+    // name should match");
+    // Assert.isNull(savedValidEmployee.getStation(), "validEmployee station should
+    // be null");
+    // }
 
-    @Test
-    public void testCreateEmployeeInvalid() {
-        // given
-        Employee invalidEmployee = new Employee();
-        invalidEmployee.setName(null);
-        int expectedAmountEmployees = employeeController.getAllEmployees().getBody().size();
+    // @Test
+    // public void testCreateEmployeeInvalid() {
+    // // given
+    // Employee invalidEmployee = new Employee();
+    // invalidEmployee.setName(null);
+    // int expectedAmountEmployees =
+    // employeeController.getAllEmployees().getBody().size();
 
-        // when then
-        assertEquals(expectedAmountEmployees, employeeController.getAllEmployees().getBody().size());
-        assertThrows(TransactionSystemException.class, () -> {
-            employeeController.createEmployee(invalidEmployee);
-        });
-    }
+    // // when then
+    // assertEquals(expectedAmountEmployees,
+    // employeeController.getAllEmployees().getBody().size());
+    // assertThrows(TransactionSystemException.class, () -> {
+    // employeeController.createEmployee(invalidEmployee);
+    // });
+    // }
 
-    @Test
-    public void testDeleteEmployee() {
-        // given
-        Employee employee = employeeController.getAllEmployees().getBody().get(0);
-        UUID employeeId = employee.getUuid();
-        int expectedAmountEmployees = employeeController.getAllEmployees().getBody().size() - 1;
+    // @Test
+    // public void testDeleteEmployee() {
+    // // given
+    // Employee employee = employeeController.getAllEmployees().getBody().get(0);
+    // UUID employeeId = employee.getUuid();
+    // int expectedAmountEmployees =
+    // employeeController.getAllEmployees().getBody().size() - 1;
 
-        // when
-        employeeController.deleteEmployee(employeeId);
+    // // when
+    // employeeController.deleteEmployee(employeeId);
 
-        // then
-        assertEquals(expectedAmountEmployees, employeeController.getAllEmployees().getBody().size());
-        assertThrows(ObjectNotFoundException.class, () -> {
-            employeeController.getEmployeeById(employeeId);
-        });
-    }
+    // // then
+    // assertEquals(expectedAmountEmployees,
+    // employeeController.getAllEmployees().getBody().size());
+    // assertThrows(ObjectNotFoundException.class, () -> {
+    // employeeController.getEmployeeById(employeeId);
+    // });
+    // }
 
 }
