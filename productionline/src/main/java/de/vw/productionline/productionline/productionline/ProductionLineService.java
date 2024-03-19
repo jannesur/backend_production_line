@@ -65,9 +65,10 @@ public class ProductionLineService {
         logger.info(String.format("Starting production for production line: %s with UUID %s", productionLine, uuid));
         Production production = new Production(productionLine);
         this.threadCount++;
-        String threadName = String.format("Thread %d: %s", this.threadCount,
+        String threadName = String.format("Thread %d - %s", this.threadCount,
                 productionLine.getVehicleModel());
-        Thread productionThread = new Thread(new ProductionRunnable(production, threadName), threadName);
+        Thread productionThread = new Thread(new ProductionRunnable(production, threadName, this.threadCount),
+                threadName);
         productionThread.start();
         productionThreads.put(uuid, productionThread);
     }

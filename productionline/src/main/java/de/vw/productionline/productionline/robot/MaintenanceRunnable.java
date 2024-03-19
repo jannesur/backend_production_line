@@ -19,14 +19,17 @@ public class MaintenanceRunnable implements Runnable {
     @Override
     public void run() {
         logger.info(
-                String.format("Thread %s: starting maintenance for robot %s", this.threadName, this.robot.getName()));
+                String.format("%s: starting maintenance for robot %s", this.threadName, this.robot.getName()));
         long maintenanceTimeLeft = this.robot.getMaintenanceTimeInMinutes();
         while (maintenanceTimeLeft > 0) {
             maintenanceTimeLeft--;
+            logger.info(
+                    String.format("%s: %d maintenance time left for robot %s", this.threadName, maintenanceTimeLeft,
+                            this.robot.getName()));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                logger.info(String.format("Thread %s: interrupted while performing maintenance on robot %s",
+                logger.info(String.format("%s: interrupted while performing maintenance on robot %s",
                         this.threadName,
                         this.robot.getName()));
                 Thread.currentThread().interrupt();
