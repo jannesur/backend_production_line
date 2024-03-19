@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.vw.productionline.productionline.exceptions.ProductionLineAlreadyRunningException;
 import de.vw.productionline.productionline.exceptions.ProductionLineIncompleteException;
 import de.vw.productionline.productionline.productionline.ProductionLine;
+import de.vw.productionline.productionline.productionline.ProductionLineService;
 import de.vw.productionline.productionline.productionline.SimulationStatus;
 import de.vw.productionline.productionline.productionline.Status;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
@@ -23,17 +25,23 @@ public class ProductionRunnable implements Runnable {
     private ProductionLine productionLine;
     private String threadName;
     private long threadParentNumber;
-    private ProductionTimeService productionTimeService;
     private long threadCount = 0l;
     private Logger logger = LoggerFactory.getLogger(ProductionRunnable.class);
 
-    public ProductionRunnable(Production production, String threadName, long threadParentNumber,
-            ProductionTimeService productionTimeService) {
+    @Autowired
+    private ProductionTimeService productionTimeService;
+
+    @Autowired
+    private ProductionService productionService;
+
+    @Autowired
+    private ProductionLineService productionLineService;
+
+    public ProductionRunnable(Production production, String threadName, long threadParentNumber) {
         this.production = production;
         this.productionLine = production.getProductionLine();
         this.threadName = threadName;
         this.threadParentNumber = threadParentNumber;
-        this.productionTimeService = productionTimeService;
     }
 
     @Override
@@ -97,13 +105,19 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void cleanUp() {
-        // TODO -> save everything so that the production line can be stopped
-        // update statuses (all production steps need to go back to "waiting" and
-        // production line needs to go to "stopped")
-
         logger.info(String.format("%s: clean up production line %s", this.threadName,
                 this.production.getProductionLine().getName()));
+
         this.production.setEndTime(LocalDateTime.now());
+        this.productionService.saveProduction(this.production);
+
+        this.productionLine.setSimulationStatus(SimulationStatus.STOPPED);
+        this.productionLine.setAllProductionStepStatus(ProductionStatus.WAITING);
+        this.productionLine.resetAllProductionStepRecoveryTimes();
+        this.productionLineService.updateProductionLine(productionLine);
+
+        // TODO -> do I need to separately save any other objects to successfully shut
+        // down the line?
     }
 
     private boolean isFailureStep(ProductionStep productionStep) {

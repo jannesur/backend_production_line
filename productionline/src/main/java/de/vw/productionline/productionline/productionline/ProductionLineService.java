@@ -43,6 +43,10 @@ public class ProductionLineService {
         return productionLineRepository.save(productionLine);
     }
 
+    public ProductionLine updateProductionLine(ProductionLine productionLine) {
+        return productionLineRepository.save(productionLine);
+    }
+
     public void deleteProductionLine(UUID uuid) {
         productionLineRepository.deleteById(uuid);
     }
