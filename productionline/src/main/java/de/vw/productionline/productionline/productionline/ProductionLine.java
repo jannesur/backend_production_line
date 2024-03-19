@@ -11,6 +11,7 @@ import de.vw.productionline.productionline.productionstep.ProductionStep;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -31,7 +32,7 @@ public class ProductionLine {
     @Enumerated(EnumType.STRING)
     private VehicleModel vehicleModel;
 
-    @OneToMany(mappedBy = "productionLine")
+    @OneToMany(mappedBy = "productionLine", fetch = FetchType.EAGER)
     @JsonManagedReference
     List<ProductionStep> productionSteps;
     @OneToOne

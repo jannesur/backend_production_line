@@ -1,5 +1,7 @@
 package de.vw.productionline.productionline.production;
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,9 +13,6 @@ import de.vw.productionline.productionline.productionline.Status;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import de.vw.productionline.productionline.productionstep.RecoveryRunnable;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ProductionRunnable implements Runnable {
     private Production production;
@@ -29,10 +28,6 @@ public class ProductionRunnable implements Runnable {
         // TODO: use pre-destroy annotation to ensure that data is saved to database
         // TODO if TIME! every 5 seconds save Production to the database (in case the
         // server fails)
-
-        // if thread is stopped/interrupted:
-        // Set productionLine status to RUNNING
-        // Set productionStep status to ...?
 
         logger.info(String.format("Started thread %s", threadName));
 
@@ -62,98 +57,124 @@ public class ProductionRunnable implements Runnable {
         }
 
         while (!Thread.interrupted()) {
+            logger.info(String.format("Thread %s: inside the while loop checking for interruptions", this.threadName));
+
             for (ProductionStep productionStep : productionLine.getProductionSteps()) {
+                logger.info(String.format("Thread %s: looping through production steps", this.threadName));
                 synchronized (this) {
                     production.setCurrentProductionStep(productionStep);
-                    logger.info("Thread %s: current productionstep is %s", productionStep);
+                    logger.info(
+                            String.format("Thread %s: current production step is %s", this.threadName, productionStep));
                 }
+
                 waitForRecovery(productionStep);
                 dealWithFailure(productionStep);
                 waitForMaintenance(productionLine);
-
-                long remainingProductionTime = productionStep.getDurationInMinutes();
-                while (remainingProductionTime > 0) {
-                    logger.info("Thread %s: is producing in productionstep %s", this.threadName, productionStep.getName());
-                    try {
-                        synchronized (this) {
-                            remainingProductionTime--;
-                            logger.info("Thread %s: remaining production time %d for productionstep %s", this.threadName,remainingProductionTime, productionStep.getName());
-                        }
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        // TODO: implement line stopping logic
-                    }
-                }
-
+                startProduction(productionStep);
                 startRecovery(productionStep);
             }
+
+            synchronized (this) {
+                production.incrementProducedCars();
+                logger.info(String.format("Thread %s: production line %s: produced one more car %d", this.threadName,
+                        productionLine.getName(), production.getNumberProducedCars()));
+            }
         }
-        synchronized (this) {
-            production.incrementProducedCars();
-            logger.info("Thread %s: productionline %s: produced one more car %d", this.threadName, productionLine.getName(), production.getNumberProducedCars());
-        }
+
         // THREAD WAS INTERRUPTED
-        synchronized (this) {
-            logger.info("Thread %s: productionline %s is stopped", this.threadName, productionLine.getName());
-            production.setEndTime(LocalDateTime.now());
-        }
+        logger.info(String.format("Thread %s: production line %s is stopped", this.threadName,
+                productionLine.getName()));
         cleanUp();
     }
 
     private void cleanUp() {
         // TODO -> save everything so that the production line can be stopped
-        logger.info("Thread %s: cleaning up productionline %s", this.threadName, this.production.getProductionLine().getName());
+        // update statuses
+        this.production.setEndTime(LocalDateTime.now());
+        logger.info(String.format("Thread %s: cleaning up production line %s", this.threadName,
+                this.production.getProductionLine().getName()));
     }
 
     private boolean isFailureStep(ProductionStep productionStep) {
-        logger.info("Thread %s: is checking for failure in productionstep %s", this.threadName, productionStep.getName());
+        logger.info(String.format("Thread %s: is checking for failure in production step %s", this.threadName,
+                productionStep.getName()));
         return Math.random() < productionStep.getFailureProbability();
     }
 
     private void dealWithFailure(ProductionStep productionStep) {
-        logger.info("Thread %s: is dealing with failure in productionstep %s", this.threadName, productionStep.getName());
+        logger.info(String.format("Thread %s: is dealing with failure in productionstep %s", this.threadName,
+                productionStep.getName()));
         if (isFailureStep(productionStep)) {
-            logger.info("Thread %s: there was a failure in productionstep %s", this.threadName, productionStep.getName());
+            logger.info(String.format("Thread %s: there was a failure in productionstep %s", this.threadName,
+                    productionStep.getName()));
             startRecovery(productionStep);
         }
         waitForRecovery(productionStep);
     }
 
+    private void startProduction(ProductionStep productionStep) {
+        long remainingProductionTime = productionStep.getDurationInMinutes();
+        while (!Thread.interrupted() && remainingProductionTime > 0) {
+            logger.info(String.format("Thread %s: is producing in production step %s", this.threadName,
+                    productionStep.getName()));
+            try {
+                synchronized (this) {
+                    remainingProductionTime--;
+                    logger.info(String.format("Thread %s: remaining production time %d for production step %s",
+                            this.threadName, remainingProductionTime, productionStep.getName()));
+                }
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.info(String.format("Thread %s: production step %s was interrupted during production",
+                        this.threadName,
+                        productionStep.getName()));
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
     private void startRecovery(ProductionStep productionStep) {
-        // TODO -> is it a bad idea to keep creating "throw-away" threads?
+
         Thread recoveryThread = new Thread(new RecoveryRunnable(productionStep));
         synchronized (this) {
-            logger.info("Thread %s: starts recovery for productionstep %s", this.threadName, productionStep.getName());
+            logger.info(String.format("Thread %s: starts recovery for production step %s", this.threadName,
+                    productionStep.getName()));
             recoveryThread.start();
         }
     }
 
     private void waitForRecovery(ProductionStep productionStep) {
         // need to make sure that
-        logger.info("Thread %s: is checking if recovery time is needed for productionstep %s", this.threadName, productionStep.getName());
-        while (productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
-            logger.info("Thread %s: recovery time is needed for productionstep %s", this.threadName, productionStep.getName());
+        logger.info(String.format("Thread %s: is checking if recovery time is needed for production step %s",
+                this.threadName,
+                productionStep.getName()));
+        while (!Thread.interrupted() && productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
             try {
                 Thread.sleep(productionStep.getRemainingRecoveryTime() * 1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                // TODO: implement line stopping logic
+                logger.info(String.format("Thread %s: production step %s was interrupted while waiting for recovery",
+                        this.threadName,
+                        productionStep.getName()));
+                Thread.currentThread().interrupt();
             }
         }
     }
 
     private void waitForMaintenance(ProductionLine productionLine) {
-        logger.info("Thread %s: is checking if maintenance time is needed for productionline %s", this.threadName, productionLine.getName());
-        while (productionLine.maxNecessaryMaintenanceTimeInMinutes() > 0) {
-            logger.info("Thread %s: maintenance time is needed for productionline %s", this.threadName, productionLine.getName());
+        logger.info(String.format("Thread %s: is checking if maintenance time is needed for production line %s",
+                this.threadName,
+                productionLine.getName()));
+        while (!Thread.interrupted() && productionLine.maxNecessaryMaintenanceTimeInMinutes() > 0) {
+            logger.info(String.format("Thread %s: maintenance time is needed for production line %s", this.threadName,
+                    productionLine.getName()));
             try {
                 Thread.sleep(productionLine.maxNecessaryMaintenanceTimeInMinutes() * 1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                // TODO: implement line stopping logic
+                logger.info(String.format("Thread %s: production line %s was interrupted while waiting for recovery",
+                        this.threadName,
+                        productionLine.getName()));
+                Thread.currentThread().interrupt();
             }
-
         }
     }
 

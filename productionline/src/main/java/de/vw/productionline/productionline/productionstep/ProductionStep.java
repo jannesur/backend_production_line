@@ -36,13 +36,14 @@ public abstract class ProductionStep {
         this.failureProbability = failureProbability;
         this.timeToRecovery = timeToRecovery;
         this.productionLine = productionLine;
+        this.productionStatus = ProductionStatus.WAITING;
     }
 
     protected ProductionStep() {
     }
 
-    public void reduceRecoveryTimeByOneMinute() {
-        this.remainingRecoveryTime--;
+    public long reduceRecoveryTimeByOneMinute() {
+        return --this.remainingRecoveryTime;
     }
 
     public UUID getUuid() {
