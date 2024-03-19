@@ -62,6 +62,10 @@ public class Production {
         this.numberProducedCars++;
     }
 
+    public void addProductionTime(ProductionTime productionTime) {
+        this.productionTimes.add(productionTime);
+    }
+
     public UUID getUuid() {
         return uuid;
     }

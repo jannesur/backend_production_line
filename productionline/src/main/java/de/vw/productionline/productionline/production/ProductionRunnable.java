@@ -5,12 +5,10 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import de.vw.productionline.productionline.exceptions.ProductionLineAlreadyRunningException;
 import de.vw.productionline.productionline.exceptions.ProductionLineIncompleteException;
 import de.vw.productionline.productionline.productionline.ProductionLine;
-import de.vw.productionline.productionline.productionline.ProductionLineService;
 import de.vw.productionline.productionline.productionline.SimulationStatus;
 import de.vw.productionline.productionline.productionline.Status;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
@@ -25,23 +23,17 @@ public class ProductionRunnable implements Runnable {
     private ProductionLine productionLine;
     private String threadName;
     private long threadParentNumber;
+    private ProductionService productionService;
     private long threadCount = 0l;
     private Logger logger = LoggerFactory.getLogger(ProductionRunnable.class);
 
-    @Autowired
-    private ProductionTimeService productionTimeService;
-
-    @Autowired
-    private ProductionService productionService;
-
-    @Autowired
-    private ProductionLineService productionLineService;
-
-    public ProductionRunnable(Production production, String threadName, long threadParentNumber) {
+    public ProductionRunnable(Production production, String threadName, long threadParentNumber,
+            ProductionService productionService) {
         this.production = production;
         this.productionLine = production.getProductionLine();
         this.threadName = threadName;
         this.threadParentNumber = threadParentNumber;
+        this.productionService = productionService;
     }
 
     @Override
@@ -109,15 +101,10 @@ public class ProductionRunnable implements Runnable {
                 this.production.getProductionLine().getName()));
 
         this.production.setEndTime(LocalDateTime.now());
-        this.productionService.saveProduction(this.production);
-
         this.productionLine.setSimulationStatus(SimulationStatus.STOPPED);
         this.productionLine.setAllProductionStepStatus(ProductionStatus.WAITING);
         this.productionLine.resetAllProductionStepRecoveryTimes();
-        this.productionLineService.updateProductionLine(productionLine);
-
-        // TODO -> do I need to separately save any other objects to successfully shut
-        // down the line?
+        this.productionService.saveProduction(this.production);
     }
 
     private boolean isFailureStep(ProductionStep productionStep) {
@@ -143,10 +130,9 @@ public class ProductionRunnable implements Runnable {
 
     private void startProduction(ProductionStep productionStep) {
         if (Thread.interrupted()) {
+            logger.info(String.format("%s interrupted in production", this.threadName));
             return;
         }
-
-        long remainingProductionTime = productionStep.getDurationInMinutes();
 
         if (this.production.getNumberProducedCars() == 0 && productionStep instanceof Robot) {
             logger.info(
@@ -154,6 +140,8 @@ public class ProductionRunnable implements Runnable {
                             productionStep.getName()));
             startMaintenanceCountdown((Robot) productionStep);
         }
+
+        long remainingProductionTime = productionStep.getDurationInMinutes();
 
         while (!Thread.interrupted() && remainingProductionTime > 0) {
             logger.info(String.format("%s: production step %s in production", this.threadName,
@@ -175,12 +163,13 @@ public class ProductionRunnable implements Runnable {
 
         ProductionTime productionTime = new ProductionTime(ProductionTimeType.PRODUCTION,
                 productionStep.getDurationInMinutes(), this.production);
-        this.productionTimeService.saveProductionTime(productionTime);
+        this.production.addProductionTime(productionTime);
 
     }
 
     private void startRecovery(ProductionStep productionStep, boolean isFailureRecovery) {
         if (Thread.interrupted()) {
+            logger.info(String.format("%s interrupted while starting recovery", this.threadName));
             return;
         }
 
@@ -188,8 +177,7 @@ public class ProductionRunnable implements Runnable {
         String recoveryThreadName = String.format("%s subthread %d.%d - recovery",
                 this.threadName, this.threadParentNumber, this.threadCount);
         Thread recoveryThread = new Thread(
-                new RecoveryRunnable(productionStep, isFailureRecovery, recoveryThreadName, this.production,
-                        this.productionTimeService),
+                new RecoveryRunnable(productionStep, isFailureRecovery, recoveryThreadName, this.production),
                 recoveryThreadName);
         synchronized (this) {
             logger.info(String.format("%s: start recovery for production step %s", this.threadName,
@@ -200,6 +188,7 @@ public class ProductionRunnable implements Runnable {
 
     private void waitForRecovery(ProductionStep productionStep) {
         if (Thread.interrupted()) {
+            logger.info(String.format("%s interrupted while waiting for recovery", this.threadName));
             return;
         }
 
@@ -236,7 +225,7 @@ public class ProductionRunnable implements Runnable {
                     this.threadParentNumber,
                     this.threadCount);
             Thread performMaintenanceThread = new Thread(
-                    new MaintenanceRunnable(robot, this.production, maintThreadName, this.productionTimeService),
+                    new MaintenanceRunnable(robot, this.production, maintThreadName),
                     maintThreadName);
             performMaintenanceThread.start();
         }
@@ -244,6 +233,7 @@ public class ProductionRunnable implements Runnable {
 
     private void waitForMaintenance() {
         if (Thread.interrupted()) {
+            logger.info(String.format("%s interrupted waiting for maintenance", this.threadName));
             return;
         }
 
@@ -265,7 +255,7 @@ public class ProductionRunnable implements Runnable {
             try {
                 Thread.sleep(this.productionLine.maxNecessaryMaintenanceTimeInMinutes() * 1000);
             } catch (InterruptedException e) {
-                logger.info(String.format("s%s: production line %s was interrupted while waiting for recovery",
+                logger.info(String.format("s%s: production line %s was interrupted while waiting for maintenance",
                         this.threadName,
                         this.productionLine.getName()));
                 Thread.currentThread().interrupt();

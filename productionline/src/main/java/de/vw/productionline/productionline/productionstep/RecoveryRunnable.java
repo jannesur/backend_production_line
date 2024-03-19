@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import de.vw.productionline.productionline.production.Production;
 import de.vw.productionline.productionline.production.ProductionTime;
-import de.vw.productionline.productionline.production.ProductionTimeService;
 import de.vw.productionline.productionline.production.ProductionTimeType;
 
 public class RecoveryRunnable implements Runnable {
@@ -14,16 +13,14 @@ public class RecoveryRunnable implements Runnable {
     private boolean isFailureRecovery;
     private String threadName;
     private Production production;
-    private ProductionTimeService productionTimeService;
     private Logger logger = LoggerFactory.getLogger(RecoveryRunnable.class);
 
     public RecoveryRunnable(ProductionStep productionStep, boolean isFailureRecovery, String threadName,
-            Production production, ProductionTimeService productionTimeService) {
+            Production production) {
         this.productionStep = productionStep;
         this.isFailureRecovery = isFailureRecovery;
         this.threadName = threadName;
         this.production = production;
-        this.productionTimeService = productionTimeService;
     }
 
     @Override
@@ -62,7 +59,7 @@ public class RecoveryRunnable implements Runnable {
         if (this.isFailureRecovery) {
             ProductionTime productionTime = new ProductionTime(ProductionTimeType.FAILURE,
                     productionStep.getTimeToRecovery(), this.production);
-            this.productionTimeService.saveProductionTime(productionTime);
+            this.production.addProductionTime(productionTime);
         }
 
     }
