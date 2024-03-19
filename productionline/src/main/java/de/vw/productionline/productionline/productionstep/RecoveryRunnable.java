@@ -6,11 +6,13 @@ import org.slf4j.LoggerFactory;
 public class RecoveryRunnable implements Runnable {
 
     private ProductionStep productionStep;
-    private Logger logger = LoggerFactory.getLogger(RecoveryRunnable.class);
+    private boolean isFailureRecovery;
     private String threadName;
+    private Logger logger = LoggerFactory.getLogger(RecoveryRunnable.class);
 
-    public RecoveryRunnable(ProductionStep productionStep, String threadName) {
+    public RecoveryRunnable(ProductionStep productionStep, boolean isFailureRecovery, String threadName) {
         this.productionStep = productionStep;
+        this.isFailureRecovery = isFailureRecovery;
         this.threadName = threadName;
     }
 
@@ -46,6 +48,12 @@ public class RecoveryRunnable implements Runnable {
             }
         }
         this.productionStep.setProductionStatus(ProductionStatus.WAITING);
+
+        if (this.isFailureRecovery) {
+            // TODO: if it was a failure, then save the time as failure recovery time for
+            // the production
+        }
+
     }
 
 }

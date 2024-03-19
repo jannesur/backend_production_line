@@ -37,6 +37,8 @@ public class MaintenanceRunnable implements Runnable {
         }
 
         this.robot.setProductionStatus(ProductionStatus.WAITING);
+
+        // TODO: save the time in maintenance as a new ProductionTime
     }
 
 }
