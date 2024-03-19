@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: .
+    image: productionlinebackend:1.0
+    container_name: backend
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/productionlinedb?allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      #- SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL5InnoDBDialect
+    ports:
+      - "8080:8080"
+    networks:
+      - backend-db
+
+  db:
+    image: mysql:latest
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: productionlinedb
+    #      MYSQL_USER: root
+    #      MYSQL_PASSWORD: root
+    networks:
+      - backend-db
+    ports:
+      - "3306:3306"
+
+networks:
+  backend-db:
