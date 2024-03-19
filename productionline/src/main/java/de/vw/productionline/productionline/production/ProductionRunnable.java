@@ -17,17 +17,15 @@ import de.vw.productionline.productionline.productionstep.RecoveryRunnable;
 public class ProductionRunnable implements Runnable {
     private Production production;
     private Logger logger = LoggerFactory.getLogger(ProductionRunnable.class);
-    private String threadName = Thread.currentThread().getName();
+    private String threadName;
 
-    public ProductionRunnable(Production production) {
+    public ProductionRunnable(Production production, String threadName) {
         this.production = production;
+        this.threadName = threadName;
     }
 
     @Override
     public void run() {
-        // TODO: use pre-destroy annotation to ensure that data is saved to database
-        // TODO if TIME! every 5 seconds save Production to the database (in case the
-        // server fails)
 
         logger.info(String.format("Started thread %s", threadName));
 
