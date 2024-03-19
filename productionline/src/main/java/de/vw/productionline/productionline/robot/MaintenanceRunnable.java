@@ -38,6 +38,7 @@ public class MaintenanceRunnable implements Runnable {
                         this.threadName,
                         this.robot.getName()));
                 Thread.currentThread().interrupt();
+                return;
             }
         }
 
