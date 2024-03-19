@@ -43,6 +43,9 @@ public class MaintenanceRunnable implements Runnable {
 
         this.robot.setProductionStatus(ProductionStatus.WAITING);
 
+        logger.info(String.format("%s: saving maintenance time for robot %s",
+                this.threadName,
+                robot.getName()));
         ProductionTime productionTime = new ProductionTime(ProductionTimeType.MAINTENANCE,
                 this.robot.getMaintenanceTimeInMinutes(), this.production);
         this.production.addProductionTime(productionTime);

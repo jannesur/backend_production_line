@@ -57,6 +57,9 @@ public class RecoveryRunnable implements Runnable {
         this.productionStep.setProductionStatus(ProductionStatus.WAITING);
 
         if (this.isFailureRecovery) {
+            logger.info(String.format("%s: saving failure time for step %s",
+                    this.threadName,
+                    productionStep.getName()));
             ProductionTime productionTime = new ProductionTime(ProductionTimeType.FAILURE,
                     productionStep.getTimeToRecovery(), this.production);
             this.production.addProductionTime(productionTime);

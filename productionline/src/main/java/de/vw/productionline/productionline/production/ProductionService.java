@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import de.vw.productionline.productionline.exceptions.ProductionLineNotRunningException;
@@ -21,7 +22,8 @@ public class ProductionService {
     private long threadCount = 0l;
     private Logger logger = LoggerFactory.getLogger(ProductionService.class);
 
-    public ProductionService(ProductionRepository productionRepository, ProductionLineService productionLineService,
+    public ProductionService(ProductionRepository productionRepository,
+            @Lazy ProductionLineService productionLineService,
             ProductionTimeService productionTimeService) {
         this.productionRepository = productionRepository;
         this.productionLineService = productionLineService;
