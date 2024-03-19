@@ -12,6 +12,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 
+//TODO: fix constructors to reflect new attributes!!
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class ProductionStep {
@@ -25,6 +26,9 @@ public abstract class ProductionStep {
     @JsonBackReference
     private ProductionLine productionLine;
 
+    private ProductionStatus productionStatus;
+    private long remainingRecoveryTime;
+
     protected ProductionStep(String name, long duration, double failureProbability, long timeToRecovery,
             ProductionLine productionLine) {
         this.name = name;
@@ -32,9 +36,14 @@ public abstract class ProductionStep {
         this.failureProbability = failureProbability;
         this.timeToRecovery = timeToRecovery;
         this.productionLine = productionLine;
+        this.productionStatus = ProductionStatus.WAITING;
     }
 
     protected ProductionStep() {
+    }
+
+    public long reduceRecoveryTimeByOneMinute() {
+        return --this.remainingRecoveryTime;
     }
 
     public UUID getUuid() {
@@ -79,6 +88,22 @@ public abstract class ProductionStep {
 
     public void setProductionLine(ProductionLine productionLine) {
         this.productionLine = productionLine;
+    }
+
+    public ProductionStatus getProductionStatus() {
+        return productionStatus;
+    }
+
+    public void setProductionStatus(ProductionStatus productionStatus) {
+        this.productionStatus = productionStatus;
+    }
+
+    public long getRemainingRecoveryTime() {
+        return remainingRecoveryTime;
+    }
+
+    public void setRemainingRecoveryTime(long remainingRecoveryTime) {
+        this.remainingRecoveryTime = remainingRecoveryTime;
     }
 
     @Override
@@ -135,5 +160,4 @@ public abstract class ProductionStep {
             return false;
         return true;
     }
-
 }

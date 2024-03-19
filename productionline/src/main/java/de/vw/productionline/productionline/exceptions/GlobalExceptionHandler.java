@@ -20,4 +20,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
+
+    @ExceptionHandler(ProductionLineAlreadyRunningException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleProductionLineAlreadyRunningException(ProductionLineAlreadyRunningException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProductionLineIncompleteException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleProductionLineIncompleteException(ProductionLineIncompleteException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProductionLineNotRunningException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleProductionLineNotRunningException(ProductionLineNotRunningException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }

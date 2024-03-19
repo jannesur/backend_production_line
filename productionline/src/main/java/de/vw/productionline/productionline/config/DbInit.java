@@ -13,6 +13,7 @@ import de.vw.productionline.productionline.employee.Employee;
 import de.vw.productionline.productionline.employee.EmployeeRepository;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.ProductionLineRepository;
+import de.vw.productionline.productionline.productionline.Status;
 import de.vw.productionline.productionline.productionline.VehicleModel;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import de.vw.productionline.productionline.robot.Robot;
@@ -141,6 +142,7 @@ public class DbInit {
         robotRepository.save(paintRobot);
         stationRepository.save(paintStation);
         productionLine2.setProductionSteps(productionSteps);
+        productionLine2.setStatus(Status.READY);
         productionLineRepository.save(productionLine2);
     }
 

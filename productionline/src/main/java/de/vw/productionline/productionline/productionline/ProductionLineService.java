@@ -1,18 +1,26 @@
 package de.vw.productionline.productionline.productionline;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
+import de.vw.productionline.productionline.exceptions.ProductionLineNotRunningException;
+import de.vw.productionline.productionline.production.Production;
+import de.vw.productionline.productionline.production.ProductionRunnable;
 
 @Service
 public class ProductionLineService {
 
     private ProductionLineRepository productionLineRepository;
+    private Map<UUID, Thread> productionThreads = new HashMap<>();
+    private Logger logger = LoggerFactory.getLogger(ProductionLineService.class);
 
     public ProductionLineService(ProductionLineRepository productionLineRepository) {
         this.productionLineRepository = productionLineRepository;
@@ -40,7 +48,7 @@ public class ProductionLineService {
 
     public ProductionLine updateProductionLine(UUID uuid, ProductionLine productionLine) {
         Optional<ProductionLine> optionalProductionLine = productionLineRepository.findById(uuid);
-        if(optionalProductionLine.isEmpty()) {
+        if (optionalProductionLine.isEmpty()) {
             throw new ObjectNotFoundException("ProductionLine not found");
         }
         ProductionLine existingProductionLine = optionalProductionLine.get();
@@ -49,6 +57,24 @@ public class ProductionLineService {
         existingProductionLine.setStatus(productionLine.getStatus());
         existingProductionLine.setVehicleModel(productionLine.getVehicleModel());
         return productionLineRepository.save(existingProductionLine);
+    }
+
+    public void startProduction(UUID uuid) {
+        ProductionLine productionLine = getProductionLineById(uuid);
+        logger.info(String.format("Trying to start production for production line: %s", productionLine));
+        Production production = new Production(productionLine);
+        Thread productionThread = new Thread(new ProductionRunnable(production));
+        productionThread.start();
+        productionThreads.put(uuid, productionThread);
+    }
+
+    public void stopProduction(UUID uuid) {
+        logger.info(String.format("Trying to end production for production line UUID: %s", uuid));
+        Thread productionThread = this.productionThreads.get(uuid);
+        if (productionThread == null) {
+            throw new ProductionLineNotRunningException();
+        }
+        productionThread.interrupt();
     }
 
 }
