@@ -66,6 +66,7 @@ buildNumber.properties
 
 # Generated files
 .idea/**/contentModel.xml
+*.iml
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
