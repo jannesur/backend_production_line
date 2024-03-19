@@ -55,7 +55,7 @@ public class ProductionLine {
 
     public long maxNecessaryMaintenanceTimeInMinutes() {
         return this.productionSteps.stream()
-                .filter(e -> e.getProductionStatus().equals(ProductionStatus.MAINTENANCE))
+                .filter(e -> e.getProductionStatus().equals(ProductionStatus.NEEDS_MAINTENANCE))
                 .mapToLong(e -> e.getRemainingRecoveryTime()).max().orElse(0);
     }
 
