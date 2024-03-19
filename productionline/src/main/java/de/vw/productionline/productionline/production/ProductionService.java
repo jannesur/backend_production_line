@@ -55,10 +55,11 @@ public class ProductionService {
 
     public Production saveProduction(Production production) {
         this.productionLineService.updateProductionLine(production.getProductionLine());
-        for (ProductionTime productionTime : production.getProductionTimes()) {
-            this.productionTimeService.saveProductionTime(productionTime);
-        }
-        return this.productionRepository.save(production);
+        Production newProduction = this.productionRepository.save(production);
+        // for (ProductionTime productionTime : production.getProductionTimes()) {
+        // this.productionTimeService.saveProductionTime(productionTime);
+        // }
+        return newProduction;
     }
 
 }

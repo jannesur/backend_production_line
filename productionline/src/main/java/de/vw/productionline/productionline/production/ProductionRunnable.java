@@ -121,6 +121,7 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void cleanUp() {
+        Thread.currentThread().interrupt();
         logger.info(String.format("%s: clean up production line %s", this.threadName,
                 this.production.getProductionLine().getName()));
 
