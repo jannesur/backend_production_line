@@ -1,22 +1,17 @@
 package de.vw.productionline.productionline.production;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
+import de.vw.productionline.productionline.exceptions.ProductionLineNotRunningException;
+import de.vw.productionline.productionline.productionline.ProductionLine;
+import de.vw.productionline.productionline.productionline.ProductionLineService;
 import de.vw.productionline.productionline.productionline.VehicleModel;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import de.vw.productionline.productionline.exceptions.ProductionLineNotRunningException;
-import de.vw.productionline.productionline.productionline.ProductionLine;
-import de.vw.productionline.productionline.productionline.ProductionLineService;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class ProductionService {
@@ -28,8 +23,8 @@ public class ProductionService {
     private Logger logger = LoggerFactory.getLogger(ProductionService.class);
 
     public ProductionService(ProductionRepository productionRepository,
-            @Lazy ProductionLineService productionLineService,
-            ProductionTimeService productionTimeService) {
+                             @Lazy ProductionLineService productionLineService,
+                             ProductionTimeService productionTimeService) {
         this.productionRepository = productionRepository;
         this.productionLineService = productionLineService;
         this.productionTimeService = productionTimeService;
@@ -111,6 +106,50 @@ public class ProductionService {
                     .sum();
         } catch (ObjectNotFoundException e) {
             throw new ObjectNotFoundException("No produced cars found for :" + productionLineUuid + " " + vehicleModel);
+        }
+    }
+
+    public List<List<ProductionTime>> getAllProductionTimesFromOneProductionLine(UUID productionLineUuid) {
+        try {
+            return productionRepository.findAllProductionsByProductionLineUuid(productionLineUuid)
+                    .stream()
+                    .map(Production::getProductionTimes)
+                    .toList();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No production times found for :" + productionLineUuid);
+        }
+    }
+
+    public List<List<ProductionTime>> getAllProductionTimesFromOneVehicleModel(VehicleModel vehicleModel) {
+        try {
+            return productionRepository.findAllProductionsByVehicleModel(vehicleModel)
+                    .stream()
+                    .map(Production::getProductionTimes)
+                    .toList();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No production times found for :" + vehicleModel);
+        }
+    }
+
+    public List<List<ProductionTime>> getProductionTimeForOneProduction(UUID uuid) {
+        try {
+            return productionRepository.findById(uuid)
+                    .stream()
+                    .map(Production::getProductionTimes)
+                    .toList();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No production times found for :" + uuid);
+        }
+    }
+
+    public List<List<ProductionTime>> getAllProductionTimes() {
+        try {
+            return productionRepository.findAll()
+                    .stream()
+                    .map(Production::getProductionTimes)
+                    .toList();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No production times found for :");
         }
     }
 
