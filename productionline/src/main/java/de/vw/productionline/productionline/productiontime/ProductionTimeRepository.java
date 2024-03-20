@@ -1,4 +1,4 @@
-package de.vw.productionline.productionline.production;
+package de.vw.productionline.productionline.productiontime;
 
 import java.util.UUID;
 

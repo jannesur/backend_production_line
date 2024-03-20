@@ -1,4 +1,4 @@
-package de.vw.productionline.productionline.production;
+package de.vw.productionline.productionline.productiontime;
 
 public enum ProductionTimeType {
     PRODUCTION, FAILURE, MAINTENANCE;

@@ -1,26 +1,28 @@
 package de.vw.productionline.productionline.productionstep;
 
+import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.vw.productionline.productionline.production.Production;
-import de.vw.productionline.productionline.production.ProductionTime;
-import de.vw.productionline.productionline.production.ProductionTimeType;
+import de.vw.productionline.productionline.productiontime.ProductionTime;
+import de.vw.productionline.productionline.productiontime.ProductionTimeType;
 
 public class RecoveryRunnable implements Runnable {
 
     private ProductionStep productionStep;
     private boolean isFailureRecovery;
     private String threadName;
-    private Production production;
+    private Consumer<ProductionTime> productionTimeConsumer;
+
     private Logger logger = LoggerFactory.getLogger(RecoveryRunnable.class);
 
     public RecoveryRunnable(ProductionStep productionStep, boolean isFailureRecovery, String threadName,
-            Production production) {
+            Consumer<ProductionTime> productionTimeConsumer) {
         this.productionStep = productionStep;
         this.isFailureRecovery = isFailureRecovery;
         this.threadName = threadName;
-        this.production = production;
+        this.productionTimeConsumer = productionTimeConsumer;
     }
 
     @Override
@@ -62,8 +64,8 @@ public class RecoveryRunnable implements Runnable {
                     this.threadName,
                     productionStep.getName()));
             ProductionTime productionTime = new ProductionTime(ProductionTimeType.FAILURE,
-                    productionStep.getTimeToRecovery(), this.production);
-            this.production.addProductionTime(productionTime);
+                    productionStep.getTimeToRecovery(), null);
+            this.productionTimeConsumer.accept(productionTime);
         }
 
     }

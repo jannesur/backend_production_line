@@ -1,11 +1,19 @@
 package de.vw.productionline.productionline.production;
 
-import de.vw.productionline.productionline.productionline.VehicleModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import de.vw.productionline.productionline.productionline.VehicleModel;
+import de.vw.productionline.productionline.productiontime.ProductionTime;
 
 @RestController
 @RequestMapping("/production")
@@ -48,31 +56,31 @@ public class ProductionController {
     }
 
     @GetMapping("/productionTimesFromOneProductionLine/{productionLineUuid}")
-    public ResponseEntity<List<List<ProductionTime>>> getAllProductionTimesFromOneProductionLine(
+    public ResponseEntity<List<Set<ProductionTime>>> getAllProductionTimesFromOneProductionLine(
             @PathVariable(value = "productionLineUuid") UUID productionLineUuid) {
-        List<List<ProductionTime>> productionTimeList = productionService
+        List<Set<ProductionTime>> productionTimeList = productionService
                 .getAllProductionTimesFromOneProductionLine(productionLineUuid);
         return ResponseEntity.ok(productionTimeList);
     }
 
     @GetMapping("/productionTimesFromOneVehicleModel/{vehicleModel}")
-    public List<List<ProductionTime>> getAllProductionTimesFromOneVehicleModel(
+    public List<Set<ProductionTime>> getAllProductionTimesFromOneVehicleModel(
             @PathVariable(value = "vehicleModel") VehicleModel vehicleModel) {
-        List<List<ProductionTime>> productionTimeList = productionService
+        List<Set<ProductionTime>> productionTimeList = productionService
                 .getAllProductionTimesFromOneVehicleModel(vehicleModel);
         return productionTimeList;
     }
 
     @GetMapping("/productionTimesFromOneProduction/{uuid}")
-    public List<List<ProductionTime>> getProductionTimeForOneProduction(@PathVariable(value = "uuid") UUID uuid) {
-        List<List<ProductionTime>> productionTimeList = productionService
+    public List<Set<ProductionTime>> getProductionTimeForOneProduction(@PathVariable(value = "uuid") UUID uuid) {
+        List<Set<ProductionTime>> productionTimeList = productionService
                 .getProductionTimeForOneProduction(uuid);
         return productionTimeList;
     }
 
     @GetMapping("/allProductionTimes")
-    public List<List<ProductionTime>> getAllProductionTimes() {
-        List<List<ProductionTime>> productionTimeList = productionService
+    public List<Set<ProductionTime>> getAllProductionTimes() {
+        List<Set<ProductionTime>> productionTimeList = productionService
                 .getAllProductionTimes();
         return productionTimeList;
     }
@@ -92,6 +100,11 @@ public class ProductionController {
     @GetMapping("/test")
     public void test() {
         this.productionService.testSaving();
+    }
+
+    @GetMapping("/get-all")
+    public List<Production> getAllProductions() {
+        return this.productionService.getAllProductions();
     }
 
 }
