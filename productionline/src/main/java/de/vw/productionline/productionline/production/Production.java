@@ -10,7 +10,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.VehicleModel;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -27,12 +30,14 @@ public class Production {
 
     private UUID productionLineUuid;
     private String productionLineName;
+
+    @Enumerated(EnumType.STRING)
     private VehicleModel vehicleModel;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private long numberProducedCars;
 
-    @OneToMany(mappedBy = "production", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "production", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JsonManagedReference
     private List<ProductionTime> productionTimes = new ArrayList<>();
 

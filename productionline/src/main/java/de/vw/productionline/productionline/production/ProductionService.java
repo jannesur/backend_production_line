@@ -1,6 +1,9 @@
 package de.vw.productionline.productionline.production;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,6 +63,35 @@ public class ProductionService {
         // this.productionTimeService.saveProductionTime(productionTime);
         // }
         return newProduction;
+    }
+
+    public void testSaving() {
+        ProductionTime time1 = this.productionTimeService
+                .saveProductionTime(new ProductionTime(ProductionTimeType.FAILURE, 10l, null));
+        ProductionTime time2 = this.productionTimeService
+                .saveProductionTime(new ProductionTime(ProductionTimeType.MAINTENANCE, 20l, null));
+        ProductionTime time3 = this.productionTimeService
+                .saveProductionTime(new ProductionTime(ProductionTimeType.PRODUCTION, 100l, null));
+
+        List<ProductionTime> times = new ArrayList<>();
+        times.add(time1);
+        times.add(time2);
+        times.add(time3);
+
+        ProductionLine productionLine = this.productionLineService
+                .getProductionLineById(UUID.fromString("51aedaa5-04b2-419f-a481-f7f676bbc0d3"));
+        Production production = new Production(productionLine, LocalDateTime.now(), LocalDateTime.now(), 5l, null);
+        production.setProductionTimes(times);
+        this.productionRepository.save(production);
+
+        // time1.setProduction(production);
+        // this.productionTimeService.saveProductionTime(time1);
+
+        // time2.setProduction(production);
+        // this.productionTimeService.saveProductionTime(time2);
+
+        // time3.setProduction(production);
+        // this.productionTimeService.saveProductionTime(time3);
     }
 
 }

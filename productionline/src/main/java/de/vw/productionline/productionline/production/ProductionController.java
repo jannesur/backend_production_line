@@ -3,6 +3,7 @@ package de.vw.productionline.productionline.production;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,11 @@ public class ProductionController {
     public ResponseEntity<Void> stopProductionLine(@PathVariable(value = "uuid") UUID uuid) {
         productionService.stopProduction(uuid);
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/test")
+    public void test() {
+        this.productionService.testSaving();
     }
 
 }
