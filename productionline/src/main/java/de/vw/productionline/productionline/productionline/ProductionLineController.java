@@ -57,16 +57,4 @@ public class ProductionLineController {
         return ResponseEntity.ok(productionLineService.updateProductionLine(uuid, updatedProductionLine));
     }
 
-    @PostMapping("/start/{uuid}")
-    public ResponseEntity<Void> startProductionLine(@PathVariable(value = "uuid") UUID uuid) {
-        productionLineService.startProduction(uuid);
-        return ResponseEntity.ok(null);
-    }
-
-    @PostMapping("/stop/{uuid}")
-    public ResponseEntity<Void> stopProductionLine(@PathVariable(value = "uuid") UUID uuid) {
-        productionLineService.stopProduction(uuid);
-        return ResponseEntity.ok(null);
-    }
-
 }

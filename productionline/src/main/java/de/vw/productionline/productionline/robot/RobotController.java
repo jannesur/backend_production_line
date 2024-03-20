@@ -46,7 +46,7 @@ public class RobotController {
         return new ResponseEntity<>(null);
     }
 
-    @GetMapping("/without-robot")
+    @GetMapping("/without-productionLine")
     public ResponseEntity<List<Robot>> getRobotsWithoutProductionLine() {
         return ResponseEntity.ok(robotService.getAllRobotsNotInProductionLine());
     }

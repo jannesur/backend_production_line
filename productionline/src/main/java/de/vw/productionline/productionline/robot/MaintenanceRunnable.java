@@ -1,19 +1,27 @@
 package de.vw.productionline.productionline.robot;
 
+import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
+import de.vw.productionline.productionline.productiontime.ProductionTime;
+import de.vw.productionline.productionline.productiontime.ProductionTimeType;
 
 public class MaintenanceRunnable implements Runnable {
 
     private Robot robot;
     private String threadName;
+    private Consumer<ProductionTime> productionTimeConsumer;
+
     private Logger logger = LoggerFactory.getLogger(MaintenanceRunnable.class);
 
-    public MaintenanceRunnable(Robot robot, String threadName) {
+    public MaintenanceRunnable(Robot robot, String threadName,
+            Consumer<ProductionTime> productionTimeConsumer) {
         this.robot = robot;
         this.threadName = threadName;
+        this.productionTimeConsumer = productionTimeConsumer;
     }
 
     @Override
@@ -33,10 +41,18 @@ public class MaintenanceRunnable implements Runnable {
                         this.threadName,
                         this.robot.getName()));
                 Thread.currentThread().interrupt();
+                return;
             }
         }
 
         this.robot.setProductionStatus(ProductionStatus.WAITING);
+
+        logger.info(String.format("%s: saving maintenance time for robot %s",
+                this.threadName,
+                robot.getName()));
+        ProductionTime productionTime = new ProductionTime(ProductionTimeType.MAINTENANCE,
+                this.robot.getMaintenanceTimeInMinutes(), null);
+        this.productionTimeConsumer.accept(productionTime);
     }
 
 }

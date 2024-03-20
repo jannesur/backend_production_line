@@ -35,8 +35,8 @@ public class StationService {
     }
 
     public List<Station> getAllStationsNotInProductionLine() {
-        List<Station> stations = this.stationRepository.findAll();
-        return stations.stream().filter(station -> station.getProductionLine() != null).toList();
+        List<Station> stations = this.stationRepository.findAllByProductionLineIsNull();
+        return stations;
     }
 
     public Station saveStation(Station station) {
