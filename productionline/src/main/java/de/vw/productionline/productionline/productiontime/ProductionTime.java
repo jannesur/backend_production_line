@@ -33,6 +33,10 @@ public class ProductionTime {
         this.production = production;
     }
 
+    public ProductionTime(ProductionTimeType productionTimeType, long durationInMinutes) {
+        this(productionTimeType, durationInMinutes, null);
+    }
+
     public ProductionTime() {
     }
 

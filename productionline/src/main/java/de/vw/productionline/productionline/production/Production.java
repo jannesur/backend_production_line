@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import de.vw.productionline.productionline.productionline.ProductionLine;
@@ -25,6 +26,7 @@ public class Production {
     private UUID uuid = UUID.randomUUID();
 
     @Transient
+    @JsonIgnore
     private ProductionLine productionLine;
 
     private UUID productionLineUuid;

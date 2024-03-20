@@ -88,7 +88,11 @@ public class ProductionRunnable implements Runnable {
         while (!this.interrupted) {
             logger.info(String.format("%s: starting a new car", this.threadName));
 
-            for (ProductionStep productionStep : this.productionLine.getProductionSteps()) {
+            List<ProductionStep> productionStepsInOrder = this.productionLine.getProductionSteps().stream()
+                    .sorted((step1, step2) -> Integer.compare(step1.getStep(), step2.getStep()))
+                    .toList();
+
+            for (ProductionStep productionStep : productionStepsInOrder) {
                 logger.info(
                         String.format("%s: current production step is %s", this.threadName, productionStep));
 

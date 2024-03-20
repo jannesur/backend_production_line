@@ -65,14 +65,10 @@ public class ProductionService {
         productionThreads.remove(uuid);
     }
 
-    public Production saveProductionAndProductionTimes(Production production, Set<ProductionTime> productionTimes) {
+    public void saveProductionAndProductionTimes(Production production, Set<ProductionTime> productionTimes) {
         this.productionLineService.updateProductionLine(production.getProductionLine());
-
-        Production newProduction = this.productionRepository.save(production);
-        // for (ProductionTime productionTime : production.getProductionTimes()) {
-        // this.productionTimeService.saveProductionTime(productionTime);
-        // }
-        return newProduction;
+        this.productionRepository.save(production);
+        saveProductionTimes(productionTimes, production);
     }
 
     private void saveProductionTimes(Set<ProductionTime> times, Production production) {
@@ -80,6 +76,24 @@ public class ProductionService {
             productionTime.setProduction(production);
             this.productionTimeService.saveProductionTime(productionTime);
         }
+    }
+
+    public void testSaving() {
+
+        ProductionLine productionLine = this.productionLineService
+                .getProductionLineById(UUID.fromString("51aedaa5-04b2-419f-a481-f7f676bbc0d3"));
+        Production production = new Production(productionLine, LocalDateTime.now(), LocalDateTime.now(), 5l);
+
+        ProductionTime time1 = new ProductionTime(ProductionTimeType.FAILURE, 10l);
+        ProductionTime time2 = new ProductionTime(ProductionTimeType.MAINTENANCE, 20l);
+        ProductionTime time3 = new ProductionTime(ProductionTimeType.PRODUCTION, 100l);
+
+        Set<ProductionTime> times = new HashSet<>();
+        times.add(time1);
+        times.add(time2);
+        times.add(time3);
+
+        saveProductionAndProductionTimes(production, times);
     }
 
     public List<Production> getAllProductions() {
@@ -133,42 +147,6 @@ public class ProductionService {
         } catch (ObjectNotFoundException e) {
             throw new ObjectNotFoundException("No produced cars found for :" + productionLineUuid + " " + vehicleModel);
         }
-    }
-
-    public void testSaving() {
-
-        ProductionLine productionLine = this.productionLineService
-                .getProductionLineById(UUID.fromString("51aedaa5-04b2-419f-a481-f7f676bbc0d3"));
-        Production production = new Production(productionLine, LocalDateTime.now(), LocalDateTime.now(), 5l);
-        // production.setProductionTimes(times);
-        this.productionRepository.save(production);
-
-        ProductionTime time1 = new ProductionTime(ProductionTimeType.FAILURE, 10l, production);
-        ProductionTime time2 = new ProductionTime(ProductionTimeType.MAINTENANCE, 20l, production);
-        ProductionTime time3 = new ProductionTime(ProductionTimeType.PRODUCTION, 100l, production);
-
-        Set<ProductionTime> times = new HashSet<>();
-        times.add(time1);
-        times.add(time2);
-        times.add(time3);
-
-        // saveProductionTimes(times);
-
-        for (ProductionTime productionTime : times) {
-            this.productionTimeService.saveProductionTime(productionTime);
-        }
-
-        // time1.setProduction(production);
-        // this.productionTimeService.saveProductionTime(time1);
-
-        // time2.setProduction(production);
-        // this.productionTimeService.saveProductionTime(time2);
-
-        // time3.setProduction(production);
-        // this.productionTimeService.saveProductionTime(time3);
-
-        // production.setProductionTimes(times);
-        // this.productionRepository.save(production);
     }
 
 }
