@@ -24,10 +24,35 @@ public class ProductionController {
         this.productionService = productionService;
     }
 
-    @GetMapping
-    public long getAllProducedCarsFromOneVehicleModel(VehicleModel vehicleModel){
-        return 0;
+    @GetMapping("/carsFromOneVehicleModel/{vehicleModel}")
+    public ResponseEntity<Long> getAllProducedCarsFromOneVehicleModel(
+            @PathVariable(value = "vehicleModel") VehicleModel vehicleModel){
+        long producedCars = productionService.getAllProducedCarsFromOneVehicleModel(vehicleModel);
+        return ResponseEntity.ok(producedCars);
     }
+
+    @GetMapping("/allCars")
+    public ResponseEntity<Long> getAllProducedCars() {
+        long producedCars = productionService.getAllProducedCars();
+        return ResponseEntity.ok(producedCars);
+    }
+
+    @GetMapping("/carsFromOneProductionLine/{productionLineUuid}")
+    public ResponseEntity<Long> getAllProducedCarsFromOneProductionLine(
+            @PathVariable(value = "productionLineUuid") UUID productionLineUuid) {
+        long producedCars = productionService.getAllProducedCarsFromOneProductionLine(productionLineUuid);
+        return ResponseEntity.ok(producedCars);
+    }
+
+    @GetMapping("/carsFromOneProductionLineAndOneVehicleModel")
+    public ResponseEntity<Long> getAllProducedCarsFromOneProductionLineForOneVehicleModel(
+            @PathVariable(value = "productionLineUuid") UUID productionLineUuid,
+            @PathVariable(value = "vehicleModel") VehicleModel vehicleModel) {
+        long producedCars = productionService.getAllProducedCarsFromOneProductionLineForOneVehicleModel(
+                productionLineUuid,vehicleModel);
+        return ResponseEntity.ok(producedCars);
+    }
+
     @PostMapping("/start/{uuid}")
     public ResponseEntity<Void> startProductionLine(@PathVariable(value = "uuid") UUID uuid) {
         productionService.startProduction(uuid);

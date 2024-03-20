@@ -1,5 +1,4 @@
 package de.vw.productionline.productionline.production;
-import java.util.*;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
 import de.vw.productionline.productionline.productionline.VehicleModel;
@@ -70,9 +69,8 @@ public class ProductionService {
 
     public long getAllProducedCarsFromOneVehicleModel(VehicleModel vehicleModel) {
         try {
-            return productionRepository.findAll()
+            return productionRepository.findAllProductionsByVehicleModel(vehicleModel)
                     .stream()
-                    .filter(production -> production.getVehicleModel().equals(vehicleModel))
                     .mapToLong(Production::getNumberProducedCars)
                     .sum();
         } catch (ObjectNotFoundException e) {
@@ -93,9 +91,8 @@ public class ProductionService {
 
     public long getAllProducedCarsFromOneProductionLine(UUID productionLineUuid) {
         try {
-            return productionRepository.findAll()
+            return productionRepository.findAllProductionsByProductionLineUuid(productionLineUuid)
                     .stream()
-                    .filter(production -> production.getProductionLineUuid().equals(productionLineUuid))
                     .mapToLong(Production::getNumberProducedCars)
                     .sum();
         } catch (ObjectNotFoundException e) {
@@ -103,12 +100,13 @@ public class ProductionService {
         }
     }
 
-    public long getAllProducedCarsFromOneProductionLineForOneVehicleModel(UUID productionLineUuid, VehicleModel vehicleModel) {
+    public long getAllProducedCarsFromOneProductionLineForOneVehicleModel(
+            UUID productionLineUuid,
+            VehicleModel vehicleModel) {
         try {
-            return productionRepository.findAll()
+            return productionRepository.findAllProductionsByProductionLineUuidAndVehicleModel(
+                            productionLineUuid, vehicleModel)
                     .stream()
-                    .filter(production -> production.getProductionLineUuid().equals(productionLineUuid))
-                    .filter(production -> production.getVehicleModel().equals(vehicleModel))
                     .mapToLong(Production::getNumberProducedCars)
                     .sum();
         } catch (ObjectNotFoundException e) {
