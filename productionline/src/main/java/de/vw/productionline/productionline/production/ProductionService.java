@@ -19,6 +19,9 @@ import de.vw.productionline.productionline.exceptions.ProductionLineNotRunningEx
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.ProductionLineService;
 import de.vw.productionline.productionline.productionline.VehicleModel;
+import de.vw.productionline.productionline.productiontime.ProductionTime;
+import de.vw.productionline.productionline.productiontime.ProductionTimeService;
+import de.vw.productionline.productionline.productiontime.ProductionTimeType;
 
 @Service
 public class ProductionService {

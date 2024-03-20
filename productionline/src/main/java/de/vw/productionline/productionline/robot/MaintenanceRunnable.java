@@ -5,9 +5,9 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.vw.productionline.productionline.production.ProductionTime;
-import de.vw.productionline.productionline.production.ProductionTimeType;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
+import de.vw.productionline.productionline.productiontime.ProductionTime;
+import de.vw.productionline.productionline.productiontime.ProductionTimeType;
 
 public class MaintenanceRunnable implements Runnable {
 

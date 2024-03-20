@@ -1,9 +1,10 @@
-package de.vw.productionline.productionline.production;
+package de.vw.productionline.productionline.productiontime;
 
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import de.vw.productionline.productionline.production.Production;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

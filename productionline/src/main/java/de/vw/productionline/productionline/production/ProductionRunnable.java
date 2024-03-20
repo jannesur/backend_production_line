@@ -20,6 +20,8 @@ import de.vw.productionline.productionline.productionline.Status;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import de.vw.productionline.productionline.productionstep.RecoveryRunnable;
+import de.vw.productionline.productionline.productiontime.ProductionTime;
+import de.vw.productionline.productionline.productiontime.ProductionTimeType;
 import de.vw.productionline.productionline.robot.MaintenanceRunnable;
 import de.vw.productionline.productionline.robot.MaintenanceWaitingRunnable;
 import de.vw.productionline.productionline.robot.Robot;
