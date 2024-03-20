@@ -3,16 +3,21 @@ package de.vw.productionline.productionline.robot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.vw.productionline.productionline.production.Production;
+import de.vw.productionline.productionline.production.ProductionTime;
+import de.vw.productionline.productionline.production.ProductionTimeType;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 
 public class MaintenanceRunnable implements Runnable {
 
     private Robot robot;
+    private Production production;
     private String threadName;
     private Logger logger = LoggerFactory.getLogger(MaintenanceRunnable.class);
 
-    public MaintenanceRunnable(Robot robot, String threadName) {
+    public MaintenanceRunnable(Robot robot, Production production, String threadName) {
         this.robot = robot;
+        this.production = production;
         this.threadName = threadName;
     }
 
@@ -33,10 +38,18 @@ public class MaintenanceRunnable implements Runnable {
                         this.threadName,
                         this.robot.getName()));
                 Thread.currentThread().interrupt();
+                return;
             }
         }
 
         this.robot.setProductionStatus(ProductionStatus.WAITING);
+
+        logger.info(String.format("%s: saving maintenance time for robot %s",
+                this.threadName,
+                robot.getName()));
+        ProductionTime productionTime = new ProductionTime(ProductionTimeType.MAINTENANCE,
+                this.robot.getMaintenanceTimeInMinutes(), this.production);
+        this.production.addProductionTime(productionTime);
     }
 
 }

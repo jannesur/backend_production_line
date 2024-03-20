@@ -32,6 +32,7 @@ public class MaintenanceWaitingRunnable implements Runnable {
                 logger.info(String.format("%s: interrupted while counting down maintenance for robot %s",
                         this.threadName, this.robot.getName()));
                 Thread.currentThread().interrupt();
+                return;
             }
         }
 
