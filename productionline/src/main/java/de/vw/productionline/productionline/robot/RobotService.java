@@ -19,9 +19,9 @@ public class RobotService {
         return robotRepository.findAll();
     }
 
-    public Robot getRobotById(UUID uuid) {
+    public Robot getRobotById(String uuid) {
         Optional<Robot> robot = robotRepository.findById(uuid);
-        if(robot.isEmpty()) {
+        if (robot.isEmpty()) {
             throw new ObjectNotFoundException("Robot not found");
         }
         return robot.get();
@@ -31,7 +31,7 @@ public class RobotService {
         return robotRepository.save(robot);
     }
 
-    public void deleteRobot(UUID uuid) {
+    public void deleteRobot(String uuid) {
         robotRepository.deleteById(uuid);
     }
 
@@ -40,7 +40,7 @@ public class RobotService {
         return robots;
     }
 
-    public Robot updateRobot(UUID uuid, Robot robot) {
+    public Robot updateRobot(String uuid, Robot robot) {
         Optional<Robot> optionalRobot = robotRepository.findById(uuid);
         if (optionalRobot.isEmpty()) {
             throw new ObjectNotFoundException("Robot not found");
@@ -56,4 +56,3 @@ public class RobotService {
         return robotRepository.save(existingRobot);
     }
 }
-

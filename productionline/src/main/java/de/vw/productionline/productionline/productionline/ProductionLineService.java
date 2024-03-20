@@ -28,7 +28,7 @@ public class ProductionLineService {
         this.productionService = productionService;
     }
 
-    public ProductionLine getProductionLineById(UUID uuid) {
+    public ProductionLine getProductionLineById(String uuid) {
         Optional<ProductionLine> productionLine = productionLineRepository.findById(uuid);
         if (productionLine.isEmpty()) {
             throw new ObjectNotFoundException("ProductionLine not found");
@@ -44,11 +44,11 @@ public class ProductionLineService {
         return productionLineRepository.save(productionLine);
     }
 
-    public void deleteProductionLine(UUID uuid) {
+    public void deleteProductionLine(String uuid) {
         productionLineRepository.deleteById(uuid);
     }
 
-    public ProductionLine updateProductionLine(UUID uuid, ProductionLine productionLine) {
+    public ProductionLine updateProductionLine(String uuid, ProductionLine productionLine) {
         Optional<ProductionLine> optionalProductionLine = productionLineRepository.findById(uuid);
         if (optionalProductionLine.isEmpty()) {
             throw new ObjectNotFoundException("ProductionLine not found");

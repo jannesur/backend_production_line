@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,8 +17,7 @@ import jakarta.persistence.OneToMany;
 @Entity
 public class ProductionLine {
     @Id
-    @Column(columnDefinition = "varchar(36)")
-    private UUID uuid = UUID.randomUUID();
+    private String uuid = UUID.randomUUID().toString();
 
     private String name;
 
@@ -73,7 +71,7 @@ public class ProductionLine {
         }
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return this.uuid;
     }
 

@@ -20,8 +20,7 @@ import jakarta.persistence.ManyToOne;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class ProductionStep {
     @Id
-    @Column(columnDefinition = "varchar(36)")
-    private UUID uuid = UUID.randomUUID();
+    private String uuid = UUID.randomUUID().toString();
     private String name;
     private long durationInMinutes;
     private double failureProbability;
@@ -64,7 +63,7 @@ public abstract class ProductionStep {
         return --this.remainingRecoveryTime;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 

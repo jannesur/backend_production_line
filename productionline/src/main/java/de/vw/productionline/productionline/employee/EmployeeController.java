@@ -1,7 +1,6 @@
 package de.vw.productionline.productionline.employee;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
