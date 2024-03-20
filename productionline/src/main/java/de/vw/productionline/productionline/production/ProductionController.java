@@ -1,17 +1,11 @@
 package de.vw.productionline.productionline.production;
 
 import de.vw.productionline.productionline.productionline.VehicleModel;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.UUID;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/production")
@@ -26,7 +20,7 @@ public class ProductionController {
 
     @GetMapping("/carsFromOneVehicleModel/{vehicleModel}")
     public ResponseEntity<Long> getAllProducedCarsFromOneVehicleModel(
-            @PathVariable(value = "vehicleModel") VehicleModel vehicleModel){
+            @PathVariable(value = "vehicleModel") VehicleModel vehicleModel) {
         long producedCars = productionService.getAllProducedCarsFromOneVehicleModel(vehicleModel);
         return ResponseEntity.ok(producedCars);
     }
@@ -49,8 +43,38 @@ public class ProductionController {
             @PathVariable(value = "productionLineUuid") UUID productionLineUuid,
             @PathVariable(value = "vehicleModel") VehicleModel vehicleModel) {
         long producedCars = productionService.getAllProducedCarsFromOneProductionLineForOneVehicleModel(
-                productionLineUuid,vehicleModel);
+                productionLineUuid, vehicleModel);
         return ResponseEntity.ok(producedCars);
+    }
+
+    @GetMapping("/productionTimesFromOneProductionLine/{productionLineUuid}")
+    public ResponseEntity<List<List<ProductionTime>>> getAllProductionTimesFromOneProductionLine(
+            @PathVariable(value = "productionLineUuid") UUID productionLineUuid) {
+        List<List<ProductionTime>> productionTimeList = productionService
+                .getAllProductionTimesFromOneProductionLine(productionLineUuid);
+        return ResponseEntity.ok(productionTimeList);
+    }
+
+    @GetMapping("/productionTimesFromOneVehicleModel/{vehicleModel}")
+    public List<List<ProductionTime>> getAllProductionTimesFromOneVehicleModel(
+            @PathVariable(value = "vehicleModel") VehicleModel vehicleModel) {
+        List<List<ProductionTime>> productionTimeList = productionService
+                .getAllProductionTimesFromOneVehicleModel(vehicleModel);
+        return productionTimeList;
+    }
+
+    @GetMapping("/productionTimesFromOneProduction/{uuid}")
+    public List<List<ProductionTime>> getProductionTimeForOneProduction(@PathVariable(value = "uuid") UUID uuid) {
+        List<List<ProductionTime>> productionTimeList = productionService
+                .getProductionTimeForOneProduction(uuid);
+        return productionTimeList;
+    }
+
+    @GetMapping("/allProductionTimes")
+    public List<List<ProductionTime>> getAllProductionTimes() {
+        List<List<ProductionTime>> productionTimeList = productionService
+                .getAllProductionTimes();
+        return productionTimeList;
     }
 
     @PostMapping("/start/{uuid}")
