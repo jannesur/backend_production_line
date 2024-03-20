@@ -1,16 +1,19 @@
 package de.vw.productionline.productionline.production;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.VehicleModel;
-import de.vw.productionline.productionline.productionstep.ProductionStep;
+import de.vw.productionline.productionline.productiontime.ProductionTime;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -23,10 +26,13 @@ public class Production {
     private UUID uuid = UUID.randomUUID();
 
     @Transient
+    @JsonIgnore
     private ProductionLine productionLine;
 
     private UUID productionLineUuid;
     private String productionLineName;
+
+    @Enumerated(EnumType.STRING)
     private VehicleModel vehicleModel;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -34,25 +40,29 @@ public class Production {
 
     @OneToMany(mappedBy = "production", fetch = FetchType.EAGER)
     @JsonManagedReference
-    private List<ProductionTime> productionTimes = new ArrayList<>();
+    private Set<ProductionTime> productionTimes = new HashSet<>();
 
-    @Transient
-    private ProductionStep currentProductionStep;
-
-    public Production(ProductionLine productionLine, LocalDateTime startTime, LocalDateTime endTime,
-            long numberProducedCars, ProductionStep currentProductionStep) {
+    public Production(ProductionLine productionLine, UUID productionLineUuid, String productionLineName,
+            VehicleModel vehicleModel, LocalDateTime startTime, LocalDateTime endTime, long numberProducedCars,
+            Set<ProductionTime> productionTimes) {
         this.productionLine = productionLine;
-        this.productionLineUuid = productionLine.getUuid();
-        this.productionLineName = productionLine.getName();
-        this.vehicleModel = productionLine.getVehicleModel();
+        this.productionLineUuid = productionLineUuid;
+        this.productionLineName = productionLineName;
+        this.vehicleModel = vehicleModel;
         this.startTime = startTime;
         this.endTime = endTime;
         this.numberProducedCars = numberProducedCars;
-        this.currentProductionStep = currentProductionStep;
+        this.productionTimes = productionTimes;
+    }
+
+    public Production(ProductionLine productionLine, LocalDateTime startTime, LocalDateTime endTime,
+            long numberProducedCars) {
+        this(productionLine, productionLine.getUuid(), productionLine.getName(), productionLine.getVehicleModel(),
+                startTime, endTime, numberProducedCars, null);
     }
 
     public Production(ProductionLine productionLine) {
-        this(productionLine, null, null, 0L, null);
+        this(productionLine, null, null, 0L);
     }
 
     public Production() {
@@ -60,10 +70,6 @@ public class Production {
 
     public void incrementProducedCars() {
         this.numberProducedCars++;
-    }
-
-    public void addProductionTime(ProductionTime productionTime) {
-        this.productionTimes.add(productionTime);
     }
 
     public UUID getUuid() {
@@ -126,20 +132,12 @@ public class Production {
         this.numberProducedCars = numberProducedCars;
     }
 
-    public List<ProductionTime> getProductionTimes() {
+    public Set<ProductionTime> getProductionTimes() {
         return productionTimes;
     }
 
-    public void setProductionTimes(List<ProductionTime> productionTimes) {
+    public void setProductionTimes(Set<ProductionTime> productionTimes) {
         this.productionTimes = productionTimes;
-    }
-
-    public ProductionStep getCurrentProductionStep() {
-        return currentProductionStep;
-    }
-
-    public void setCurrentProductionStep(ProductionStep currentProductionStep) {
-        this.currentProductionStep = currentProductionStep;
     }
 
     @Override
