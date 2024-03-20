@@ -32,7 +32,7 @@ public class EmployeeService {
         this.stationService = stationService;
     }
 
-    public Employee getEmployeeById(UUID uuid) {
+    public Employee getEmployeeById(String uuid) {
         Optional<Employee> employee = employeeRepository.findById(uuid);
         if (employee.isEmpty()) {
             throw new ObjectNotFoundException("Employee not found");
@@ -52,7 +52,7 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public void deleteEmployee(UUID uuid) {
+    public void deleteEmployee(String uuid) {
         Optional<Employee> employee = employeeRepository.findById(uuid);
         int testsizebefore = employeeRepository.findAll().size();
         if (employee.isEmpty()) {
@@ -68,7 +68,7 @@ public class EmployeeService {
         int testsizeafter = employeeRepository.findAll().size();
     }
 
-    public Employee updatEmployee(UUID uuid, Employee employee) {
+    public Employee updatEmployee(String uuid, Employee employee) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(uuid);
         if (optionalEmployee.isEmpty()) {
             throw new ObjectNotFoundException("Employee not found.");

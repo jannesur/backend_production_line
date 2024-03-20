@@ -18,7 +18,7 @@ public class Employee {
 
     @Id
     @Column(columnDefinition = "varchar(36)")
-    private UUID uuid = UUID.randomUUID();
+    private String uuid = UUID.randomUUID().toString();
     @NotBlank(message = "Employee name cannot be null")
     private String name;
 
@@ -35,11 +35,11 @@ public class Employee {
     public Employee() {
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 

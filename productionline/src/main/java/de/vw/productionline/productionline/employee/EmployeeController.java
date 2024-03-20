@@ -38,7 +38,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "uuid") String uuid) {
         return ResponseEntity.ok(employeeService.getEmployeeById(uuid));
     }
 
@@ -48,13 +48,13 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "uuid") String uuid) {
         employeeService.deleteEmployee(uuid);
         return ResponseEntity.ok(null);
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable UUID uuid, @RequestBody Employee employee) {
+    public ResponseEntity<Employee> updateEmployee(@PathVariable String uuid, @RequestBody Employee employee) {
         return ResponseEntity.ok(employeeService.updatEmployee(uuid, employee));
     }
 

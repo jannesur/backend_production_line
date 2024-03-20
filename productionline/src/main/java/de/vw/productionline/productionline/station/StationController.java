@@ -52,7 +52,7 @@ public class StationController {
     }
 
     @PutMapping("/add-employee")
-    public ResponseEntity<Station> addEmployeeToStation(@RequestParam UUID employeeUuid,
+    public ResponseEntity<Station> addEmployeeToStation(@RequestParam String employeeUuid,
             @RequestParam UUID stationUuid) {
         return ResponseEntity.ok(this.stationService.addEmployeeToStation(employeeUuid, stationUuid));
     }

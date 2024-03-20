@@ -51,7 +51,7 @@ public class StationService {
         return this.stationRepository.save(station);
     }
 
-    public Station addEmployeeToStation(UUID employeeUuid, UUID stationUuid) {
+    public Station addEmployeeToStation(String employeeUuid, UUID stationUuid) {
         Optional<Employee> employeeOptional = this.employeeRepository.findById(employeeUuid);
         if (employeeOptional.isEmpty()) {
             throw new ObjectNotFoundException(String.format("Employee with UUID %s does not exist.", employeeUuid));

@@ -20,6 +20,7 @@ import de.vw.productionline.productionline.robot.Robot;
 import de.vw.productionline.productionline.robot.RobotRepository;
 import de.vw.productionline.productionline.station.Station;
 import de.vw.productionline.productionline.station.StationRepository;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class DbInit {
@@ -29,22 +30,23 @@ public class DbInit {
     private StationRepository stationRepository;
     private Logger logger = LoggerFactory.getLogger(DbInit.class);
 
-    public DbInit(ProductionLineRepository productionLineRepository,
+    public DbInit(ProductionLineRepository productionLineRepository, EmployeeRepository employeeRepository,
             RobotRepository robotRepository, StationRepository stationRepository) {
         this.employeeRepository = employeeRepository;
         this.productionLineRepository = productionLineRepository;
         this.robotRepository = robotRepository;
         this.stationRepository = stationRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     // @PostConstruct
     private void initializeData() {
-        saveNewStations();
-        saveNewRobots();
+        // saveNewStations();
+        // saveNewRobots();
         saveNewEmployees();
-        saveNewProductionLines();
-        assignEmployeesToStations();
-        assignStationsAndRobotsToProductionLines();
+        // saveNewProductionLines();
+        // assignEmployeesToStations();
+        // assignStationsAndRobotsToProductionLines();
     }
 
     private void saveNewStations() {
