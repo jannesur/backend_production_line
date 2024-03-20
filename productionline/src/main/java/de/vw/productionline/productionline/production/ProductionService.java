@@ -1,5 +1,8 @@
 package de.vw.productionline.productionline.production;
+import java.util.*;
 
+import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
+import de.vw.productionline.productionline.productionline.VehicleModel;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,6 +66,54 @@ public class ProductionService {
         // this.productionTimeService.saveProductionTime(productionTime);
         // }
         return newProduction;
+    }
+
+    public long getAllProducedCarsFromOneVehicleModel(VehicleModel vehicleModel) {
+        try {
+            return productionRepository.findAll()
+                    .stream()
+                    .filter(production -> production.getVehicleModel().equals(vehicleModel))
+                    .mapToLong(Production::getNumberProducedCars)
+                    .sum();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No produced cars found for : " + vehicleModel);
+        }
+    }
+
+    public long getAllProducedCars() {
+        try {
+            return productionRepository.findAll()
+                    .stream()
+                    .mapToLong(Production::getNumberProducedCars)
+                    .sum();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No produced cars found");
+        }
+    }
+
+    public long getAllProducedCarsFromOneProductionLine(UUID productionLineUuid) {
+        try {
+            return productionRepository.findAll()
+                    .stream()
+                    .filter(production -> production.getProductionLineUuid().equals(productionLineUuid))
+                    .mapToLong(Production::getNumberProducedCars)
+                    .sum();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No produced cars found for :" + productionLineUuid);
+        }
+    }
+
+    public long getAllProducedCarsFromOneProductionLineForOneVehicleModel(UUID productionLineUuid, VehicleModel vehicleModel) {
+        try {
+            return productionRepository.findAll()
+                    .stream()
+                    .filter(production -> production.getProductionLineUuid().equals(productionLineUuid))
+                    .filter(production -> production.getVehicleModel().equals(vehicleModel))
+                    .mapToLong(Production::getNumberProducedCars)
+                    .sum();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No produced cars found for :" + productionLineUuid + " " + vehicleModel);
+        }
     }
 
     public void testSaving() {
