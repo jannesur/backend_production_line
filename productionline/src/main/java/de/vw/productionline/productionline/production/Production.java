@@ -1,8 +1,8 @@
 package de.vw.productionline.productionline.production;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.VehicleModel;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -37,9 +36,9 @@ public class Production {
     private LocalDateTime endTime;
     private long numberProducedCars;
 
-    @OneToMany(mappedBy = "production", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @OneToMany(mappedBy = "production", fetch = FetchType.EAGER)
     @JsonManagedReference
-    private List<ProductionTime> productionTimes = new ArrayList<>();
+    private Set<ProductionTime> productionTimes = new HashSet<>();
 
     @Transient
     private ProductionStep currentProductionStep;
@@ -131,11 +130,11 @@ public class Production {
         this.numberProducedCars = numberProducedCars;
     }
 
-    public List<ProductionTime> getProductionTimes() {
+    public Set<ProductionTime> getProductionTimes() {
         return productionTimes;
     }
 
-    public void setProductionTimes(List<ProductionTime> productionTimes) {
+    public void setProductionTimes(Set<ProductionTime> productionTimes) {
         this.productionTimes = productionTimes;
     }
 
