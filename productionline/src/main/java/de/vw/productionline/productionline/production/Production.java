@@ -43,16 +43,24 @@ public class Production {
     @Transient
     private ProductionStep currentProductionStep;
 
-    public Production(ProductionLine productionLine, LocalDateTime startTime, LocalDateTime endTime,
-            long numberProducedCars, ProductionStep currentProductionStep) {
+    public Production(ProductionLine productionLine, UUID productionLineUuid, String productionLineName,
+            VehicleModel vehicleModel, LocalDateTime startTime, LocalDateTime endTime, long numberProducedCars,
+            Set<ProductionTime> productionTimes, ProductionStep currentProductionStep) {
         this.productionLine = productionLine;
-        this.productionLineUuid = productionLine.getUuid();
-        this.productionLineName = productionLine.getName();
-        this.vehicleModel = productionLine.getVehicleModel();
+        this.productionLineUuid = productionLineUuid;
+        this.productionLineName = productionLineName;
+        this.vehicleModel = vehicleModel;
         this.startTime = startTime;
         this.endTime = endTime;
         this.numberProducedCars = numberProducedCars;
+        this.productionTimes = productionTimes;
         this.currentProductionStep = currentProductionStep;
+    }
+
+    public Production(ProductionLine productionLine, LocalDateTime startTime, LocalDateTime endTime,
+            long numberProducedCars, ProductionStep currentProductionStep) {
+        this(productionLine, productionLine.getUuid(), productionLine.getName(), productionLine.getVehicleModel(),
+                startTime, endTime, numberProducedCars, null, currentProductionStep);
     }
 
     public Production(ProductionLine productionLine) {

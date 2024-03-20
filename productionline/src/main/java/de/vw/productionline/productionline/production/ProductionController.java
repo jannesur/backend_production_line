@@ -1,17 +1,17 @@
 package de.vw.productionline.productionline.production;
 
-import de.vw.productionline.productionline.productionline.VehicleModel;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import de.vw.productionline.productionline.productionline.VehicleModel;
 
 @RestController
 @RequestMapping("/production")
@@ -25,9 +25,10 @@ public class ProductionController {
     }
 
     @GetMapping
-    public long getAllProducedCarsFromOneVehicleModel(VehicleModel vehicleModel){
+    public long getAllProducedCarsFromOneVehicleModel(VehicleModel vehicleModel) {
         return 0;
     }
+
     @PostMapping("/start/{uuid}")
     public ResponseEntity<Void> startProductionLine(@PathVariable(value = "uuid") UUID uuid) {
         productionService.startProduction(uuid);
@@ -43,6 +44,11 @@ public class ProductionController {
     @GetMapping("/test")
     public void test() {
         this.productionService.testSaving();
+    }
+
+    @GetMapping("/get-all")
+    public List<Production> getAllProductions() {
+        return this.productionService.getAllProductions();
     }
 
 }

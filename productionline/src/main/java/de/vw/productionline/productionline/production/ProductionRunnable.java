@@ -1,7 +1,13 @@
 package de.vw.productionline.productionline.production;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,22 +25,30 @@ import de.vw.productionline.productionline.robot.MaintenanceWaitingRunnable;
 import de.vw.productionline.productionline.robot.Robot;
 
 public class ProductionRunnable implements Runnable {
-    private Production production;
-    private ProductionLine productionLine;
-    private String threadName;
-    private long threadParentNumber;
-    private ProductionService productionService;
+
+    // Set through constructor
+    private final Production production;
+    private final String threadName;
+    private final long threadParentNumber;
+    private final BiConsumer<Production, Set<ProductionTime>> saveProductionAndProductionTimesConsumer;
+
+    // Other necessary instance variables
+    private final ProductionLine productionLine;
+    private Set<ProductionTime> productionTimes = new HashSet<>();
+    private Map<String, Thread> childrenThreads = new HashMap<>();
     private long threadCount = 0l;
     private boolean interrupted = false;
-    private Logger logger = LoggerFactory.getLogger(ProductionRunnable.class);
+    private final Consumer<ProductionTime> productionTimeConsumer = productionTime -> productionTimes
+            .add(productionTime);
+    private final Logger logger = LoggerFactory.getLogger(ProductionRunnable.class);
 
     public ProductionRunnable(Production production, String threadName, long threadParentNumber,
-            ProductionService productionService) {
+            BiConsumer<Production, Set<ProductionTime>> saveProductionAndProductionTimes) {
         this.production = production;
         this.productionLine = production.getProductionLine();
         this.threadName = threadName;
         this.threadParentNumber = threadParentNumber;
-        this.productionService = productionService;
+        this.saveProductionAndProductionTimesConsumer = saveProductionAndProductionTimes;
     }
 
     @Override
@@ -129,7 +143,7 @@ public class ProductionRunnable implements Runnable {
         this.productionLine.setSimulationStatus(SimulationStatus.STOPPED);
         this.productionLine.setAllProductionStepStatus(ProductionStatus.WAITING);
         this.productionLine.resetAllProductionStepRecoveryTimes();
-        this.productionService.saveProduction(this.production);
+        this.saveProductionAndProductionTimesConsumer.accept(production, this.productionTimes);
     }
 
     private boolean isFailureStep(ProductionStep productionStep) {
@@ -197,7 +211,7 @@ public class ProductionRunnable implements Runnable {
                 productionStep.getName()));
         ProductionTime productionTime = new ProductionTime(ProductionTimeType.PRODUCTION,
                 productionStep.getDurationInMinutes(), this.production);
-        this.production.addProductionTime(productionTime);
+        this.productionTimes.add(productionTime);
 
     }
 
@@ -212,8 +226,10 @@ public class ProductionRunnable implements Runnable {
         String recoveryThreadName = String.format("%s subthread %d.%d - recovery",
                 this.threadName, this.threadParentNumber, this.threadCount);
         Thread recoveryThread = new Thread(
-                new RecoveryRunnable(productionStep, isFailureRecovery, recoveryThreadName, this.production),
+                new RecoveryRunnable(productionStep, isFailureRecovery, recoveryThreadName,
+                        this.productionTimeConsumer),
                 recoveryThreadName);
+        this.childrenThreads.put(recoveryThreadName, recoveryThread);
         synchronized (this) {
             logger.info(String.format("%s: start recovery for production step %s", this.threadName,
                     productionStep.getName()));
@@ -259,6 +275,7 @@ public class ProductionRunnable implements Runnable {
                 this.threadCount);
         Thread waitForMaintenanceThread = new Thread(new MaintenanceWaitingRunnable(robot, waitMaintThreadName),
                 waitMaintThreadName);
+        this.childrenThreads.put(waitMaintThreadName, waitForMaintenanceThread);
         waitForMaintenanceThread.start();
     }
 
@@ -275,8 +292,9 @@ public class ProductionRunnable implements Runnable {
                     this.threadParentNumber,
                     this.threadCount);
             Thread performMaintenanceThread = new Thread(
-                    new MaintenanceRunnable(robot, this.production, maintThreadName),
+                    new MaintenanceRunnable(robot, maintThreadName, productionTimeConsumer),
                     maintThreadName);
+            this.childrenThreads.put(maintThreadName, performMaintenanceThread);
             performMaintenanceThread.start();
         }
     }
