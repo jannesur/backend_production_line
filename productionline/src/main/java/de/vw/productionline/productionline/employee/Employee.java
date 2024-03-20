@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.vw.productionline.productionline.station.Station;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.NotBlank;
 public class Employee {
 
     @Id
+    @Column(columnDefinition = "varchar(36)")
     private UUID uuid = UUID.randomUUID();
     @NotBlank(message = "Employee name cannot be null")
     private String name;

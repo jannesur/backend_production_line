@@ -29,7 +29,7 @@ public class DbInit {
     private StationRepository stationRepository;
     private Logger logger = LoggerFactory.getLogger(DbInit.class);
 
-    public DbInit(EmployeeRepository employeeRepository, ProductionLineRepository productionLineRepository,
+    public DbInit(ProductionLineRepository productionLineRepository,
             RobotRepository robotRepository, StationRepository stationRepository) {
         this.employeeRepository = employeeRepository;
         this.productionLineRepository = productionLineRepository;

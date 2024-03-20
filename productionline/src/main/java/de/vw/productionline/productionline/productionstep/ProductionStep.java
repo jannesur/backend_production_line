@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class ProductionStep {
     @Id
+    @Column(columnDefinition = "varchar(36)")
     private UUID uuid = UUID.randomUUID();
     private String name;
     private long durationInMinutes;

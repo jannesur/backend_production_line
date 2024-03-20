@@ -1,17 +1,18 @@
 version: "3.8"
 services:
   backend:
+    depends_on:
+      db:
+        condition: service_healthy
     build:
       context: .
     image: productionlinebackend:1.0
     container_name: backend
-    depends_on:
-      - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/productionlinedb?allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
-      #- SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL5InnoDBDialect
+      - SPRING_PROFILES_ACTIVE=prod
     ports:
       - "8080:8080"
     networks:
@@ -29,6 +30,10 @@ services:
       - backend-db
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 2s
+      retries: 2
 
 networks:
   backend-db:

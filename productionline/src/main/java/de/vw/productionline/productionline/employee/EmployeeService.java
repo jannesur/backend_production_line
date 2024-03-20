@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
+import de.vw.productionline.productionline.productionstep.RecoveryRunnable;
 import de.vw.productionline.productionline.station.Station;
 import de.vw.productionline.productionline.station.StationRepository;
 import de.vw.productionline.productionline.station.StationService;
@@ -17,6 +20,8 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     private StationRepository stationRepository;
+
+    private Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
     private StationService stationService;
 
