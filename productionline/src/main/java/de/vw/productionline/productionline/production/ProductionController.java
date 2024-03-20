@@ -44,7 +44,7 @@ public class ProductionController {
         return ResponseEntity.ok(producedCars);
     }
 
-    @GetMapping("/carsFromOneProductionLineAndOneVehicleModel")
+    @GetMapping("/carsFromOneProductionLineAndOneVehicleModel/{productionLineUuid}/{vehicleModel}")
     public ResponseEntity<Long> getAllProducedCarsFromOneProductionLineForOneVehicleModel(
             @PathVariable(value = "productionLineUuid") UUID productionLineUuid,
             @PathVariable(value = "vehicleModel") VehicleModel vehicleModel) {
