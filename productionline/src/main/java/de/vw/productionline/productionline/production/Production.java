@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.VehicleModel;
-import de.vw.productionline.productionline.productionstep.ProductionStep;
 import de.vw.productionline.productionline.productiontime.ProductionTime;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,12 +40,9 @@ public class Production {
     @JsonManagedReference
     private Set<ProductionTime> productionTimes = new HashSet<>();
 
-    @Transient
-    private ProductionStep currentProductionStep;
-
     public Production(ProductionLine productionLine, UUID productionLineUuid, String productionLineName,
             VehicleModel vehicleModel, LocalDateTime startTime, LocalDateTime endTime, long numberProducedCars,
-            Set<ProductionTime> productionTimes, ProductionStep currentProductionStep) {
+            Set<ProductionTime> productionTimes) {
         this.productionLine = productionLine;
         this.productionLineUuid = productionLineUuid;
         this.productionLineName = productionLineName;
@@ -55,17 +51,16 @@ public class Production {
         this.endTime = endTime;
         this.numberProducedCars = numberProducedCars;
         this.productionTimes = productionTimes;
-        this.currentProductionStep = currentProductionStep;
     }
 
     public Production(ProductionLine productionLine, LocalDateTime startTime, LocalDateTime endTime,
-            long numberProducedCars, ProductionStep currentProductionStep) {
+            long numberProducedCars) {
         this(productionLine, productionLine.getUuid(), productionLine.getName(), productionLine.getVehicleModel(),
-                startTime, endTime, numberProducedCars, null, currentProductionStep);
+                startTime, endTime, numberProducedCars, null);
     }
 
     public Production(ProductionLine productionLine) {
-        this(productionLine, null, null, 0L, null);
+        this(productionLine, null, null, 0L);
     }
 
     public Production() {
@@ -73,10 +68,6 @@ public class Production {
 
     public void incrementProducedCars() {
         this.numberProducedCars++;
-    }
-
-    public void addProductionTime(ProductionTime productionTime) {
-        this.productionTimes.add(productionTime);
     }
 
     public UUID getUuid() {
@@ -145,14 +136,6 @@ public class Production {
 
     public void setProductionTimes(Set<ProductionTime> productionTimes) {
         this.productionTimes = productionTimes;
-    }
-
-    public ProductionStep getCurrentProductionStep() {
-        return currentProductionStep;
-    }
-
-    public void setCurrentProductionStep(ProductionStep currentProductionStep) {
-        this.currentProductionStep = currentProductionStep;
     }
 
     @Override

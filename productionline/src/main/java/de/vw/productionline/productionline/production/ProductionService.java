@@ -67,11 +67,23 @@ public class ProductionService {
 
     public Production saveProductionAndProductionTimes(Production production, Set<ProductionTime> productionTimes) {
         this.productionLineService.updateProductionLine(production.getProductionLine());
+
         Production newProduction = this.productionRepository.save(production);
         // for (ProductionTime productionTime : production.getProductionTimes()) {
         // this.productionTimeService.saveProductionTime(productionTime);
         // }
         return newProduction;
+    }
+
+    private void saveProductionTimes(Set<ProductionTime> times, Production production) {
+        for (ProductionTime productionTime : times) {
+            productionTime.setProduction(production);
+            this.productionTimeService.saveProductionTime(productionTime);
+        }
+    }
+
+    public List<Production> getAllProductions() {
+        return this.productionRepository.findAll();
     }
 
     public long getAllProducedCarsFromOneVehicleModel(VehicleModel vehicleModel) {
@@ -127,7 +139,7 @@ public class ProductionService {
 
         ProductionLine productionLine = this.productionLineService
                 .getProductionLineById(UUID.fromString("51aedaa5-04b2-419f-a481-f7f676bbc0d3"));
-        Production production = new Production(productionLine, LocalDateTime.now(), LocalDateTime.now(), 5l, null);
+        Production production = new Production(productionLine, LocalDateTime.now(), LocalDateTime.now(), 5l);
         // production.setProductionTimes(times);
         this.productionRepository.save(production);
 
@@ -157,16 +169,6 @@ public class ProductionService {
 
         // production.setProductionTimes(times);
         // this.productionRepository.save(production);
-    }
-
-    private void saveProductionTimes(Set<ProductionTime> times) {
-        for (ProductionTime productionTime : times) {
-            this.productionTimeService.saveProductionTime(productionTime);
-        }
-    }
-
-    public List<Production> getAllProductions() {
-        return this.productionRepository.findAll();
     }
 
 }

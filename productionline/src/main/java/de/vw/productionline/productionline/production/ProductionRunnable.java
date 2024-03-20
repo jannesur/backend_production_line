@@ -89,11 +89,8 @@ public class ProductionRunnable implements Runnable {
             logger.info(String.format("%s: starting a new car", this.threadName));
 
             for (ProductionStep productionStep : this.productionLine.getProductionSteps()) {
-                synchronized (this) {
-                    production.setCurrentProductionStep(productionStep);
-                    logger.info(
-                            String.format("%s: current production step is %s", this.threadName, productionStep));
-                }
+                logger.info(
+                        String.format("%s: current production step is %s", this.threadName, productionStep));
 
                 if (!this.interrupted) {
                     waitForRecovery(productionStep);
