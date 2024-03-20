@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 public class ProductionTime {
 
     @Id
-    private UUID uuid;
+    private UUID uuid = UUID.randomUUID();
 
     @Enumerated(EnumType.STRING)
     private ProductionTimeType productionTimeType;

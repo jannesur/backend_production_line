@@ -52,6 +52,7 @@ public class RecoveryRunnable implements Runnable {
                 logger.info(String.format("%s: production step %s was interrupted", this.threadName,
                         this.productionStep.getName()));
                 Thread.currentThread().interrupt();
+                return;
             }
         }
         this.productionStep.setProductionStatus(ProductionStatus.WAITING);

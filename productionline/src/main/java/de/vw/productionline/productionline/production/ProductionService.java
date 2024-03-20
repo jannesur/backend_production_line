@@ -1,6 +1,11 @@
 package de.vw.productionline.productionline.production;
 
+import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
+import de.vw.productionline.productionline.productionline.VehicleModel;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -55,10 +60,87 @@ public class ProductionService {
 
     public Production saveProduction(Production production) {
         this.productionLineService.updateProductionLine(production.getProductionLine());
-        for (ProductionTime productionTime : production.getProductionTimes()) {
-            this.productionTimeService.saveProductionTime(productionTime);
+        Production newProduction = this.productionRepository.save(production);
+        // for (ProductionTime productionTime : production.getProductionTimes()) {
+        // this.productionTimeService.saveProductionTime(productionTime);
+        // }
+        return newProduction;
+    }
+
+    public long getAllProducedCarsFromOneVehicleModel(VehicleModel vehicleModel) {
+        try {
+            return productionRepository.findAllProductionsByVehicleModel(vehicleModel)
+                    .stream()
+                    .mapToLong(Production::getNumberProducedCars)
+                    .sum();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No produced cars found for : " + vehicleModel);
         }
-        return this.productionRepository.save(production);
+    }
+
+    public long getAllProducedCars() {
+        try {
+            return productionRepository.findAll()
+                    .stream()
+                    .mapToLong(Production::getNumberProducedCars)
+                    .sum();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No produced cars found");
+        }
+    }
+
+    public long getAllProducedCarsFromOneProductionLine(UUID productionLineUuid) {
+        try {
+            return productionRepository.findAllProductionsByProductionLineUuid(productionLineUuid)
+                    .stream()
+                    .mapToLong(Production::getNumberProducedCars)
+                    .sum();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No produced cars found for :" + productionLineUuid);
+        }
+    }
+
+    public long getAllProducedCarsFromOneProductionLineForOneVehicleModel(
+            UUID productionLineUuid,
+            VehicleModel vehicleModel) {
+        try {
+            return productionRepository.findAllProductionsByProductionLineUuidAndVehicleModel(
+                            productionLineUuid, vehicleModel)
+                    .stream()
+                    .mapToLong(Production::getNumberProducedCars)
+                    .sum();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No produced cars found for :" + productionLineUuid + " " + vehicleModel);
+        }
+    }
+
+    public void testSaving() {
+        ProductionTime time1 = this.productionTimeService
+                .saveProductionTime(new ProductionTime(ProductionTimeType.FAILURE, 10l, null));
+        ProductionTime time2 = this.productionTimeService
+                .saveProductionTime(new ProductionTime(ProductionTimeType.MAINTENANCE, 20l, null));
+        ProductionTime time3 = this.productionTimeService
+                .saveProductionTime(new ProductionTime(ProductionTimeType.PRODUCTION, 100l, null));
+
+        List<ProductionTime> times = new ArrayList<>();
+        times.add(time1);
+        times.add(time2);
+        times.add(time3);
+
+        ProductionLine productionLine = this.productionLineService
+                .getProductionLineById(UUID.fromString("51aedaa5-04b2-419f-a481-f7f676bbc0d3"));
+        Production production = new Production(productionLine, LocalDateTime.now(), LocalDateTime.now(), 5l, null);
+        production.setProductionTimes(times);
+        this.productionRepository.save(production);
+
+        // time1.setProduction(production);
+        // this.productionTimeService.saveProductionTime(time1);
+
+        // time2.setProduction(production);
+        // this.productionTimeService.saveProductionTime(time2);
+
+        // time3.setProduction(production);
+        // this.productionTimeService.saveProductionTime(time3);
     }
 
 }

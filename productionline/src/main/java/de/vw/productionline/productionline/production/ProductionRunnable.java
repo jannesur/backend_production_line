@@ -121,6 +121,7 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void cleanUp() {
+        Thread.currentThread().interrupt();
         logger.info(String.format("%s: clean up production line %s", this.threadName,
                 this.production.getProductionLine().getName()));
 
@@ -138,9 +139,10 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void dealWithFailure(ProductionStep productionStep) {
-        logger.info(String.format("%s Thread.interrupted() is %b", this.threadName, Thread.interrupted()));
+
         if (Thread.interrupted()) {
             this.interrupted = true;
+            logger.info(String.format("%s interrupted at dealWithFailure()", this.threadName));
             return;
         }
 
@@ -155,7 +157,6 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void startProduction(ProductionStep productionStep) {
-        logger.info(String.format("%s Thread.interrupted() is %b", this.threadName, Thread.interrupted()));
         if (Thread.interrupted()) {
             logger.info(String.format("%s interrupted in production", this.threadName));
             this.interrupted = true;
@@ -171,8 +172,7 @@ public class ProductionRunnable implements Runnable {
 
         long remainingProductionTime = productionStep.getDurationInMinutes();
 
-        logger.info(String.format("%s Thread.interrupted() is %b", this.threadName, Thread.interrupted()));
-        while (!Thread.interrupted() && remainingProductionTime > 0) {
+        while (!this.interrupted && remainingProductionTime > 0) {
             logger.info(String.format("%s: production step %s in production", this.threadName,
                     productionStep.getName()));
             try {
@@ -186,7 +186,9 @@ public class ProductionRunnable implements Runnable {
                 logger.info(String.format("%s: production step %s was interrupted during production",
                         this.threadName,
                         productionStep.getName()));
+                this.interrupted = true;
                 Thread.currentThread().interrupt();
+                return;
             }
         }
 
@@ -200,9 +202,9 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void startRecovery(ProductionStep productionStep, boolean isFailureRecovery) {
-        logger.info(String.format("%s Thread.interrupted() is %b", this.threadName, Thread.interrupted()));
         if (Thread.interrupted()) {
             logger.info(String.format("%s interrupted while starting recovery", this.threadName));
+            this.interrupted = true;
             return;
         }
 
@@ -220,9 +222,9 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void waitForRecovery(ProductionStep productionStep) {
-        logger.info(String.format("%s Thread.interrupted() is %b", this.threadName, Thread.interrupted()));
         if (Thread.interrupted()) {
             logger.info(String.format("%s interrupted while waiting for recovery", this.threadName));
+            this.interrupted = true;
             return;
         }
 
@@ -230,22 +232,24 @@ public class ProductionRunnable implements Runnable {
                 this.threadName,
                 productionStep.getName()));
 
-        while (!Thread.interrupted() && productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
+        while (!this.interrupted && productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
             try {
                 Thread.sleep(productionStep.getRemainingRecoveryTime() * 1000);
             } catch (InterruptedException e) {
                 logger.info(String.format("%s: production step %s was interrupted while waiting for recovery",
                         this.threadName,
                         productionStep.getName()));
+                this.interrupted = true;
                 Thread.currentThread().interrupt();
+                return;
             }
         }
     }
 
     private void startMaintenanceCountdown(Robot robot) {
-        logger.info(String.format("%s Thread.interrupted() is %b", this.threadName, Thread.interrupted()));
         if (Thread.interrupted()) {
             logger.info(String.format("%s interrupted while waiting for recovery", this.threadName));
+            this.interrupted = true;
             return;
         }
 
@@ -259,9 +263,9 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void startMaintenance(List<Robot> robots) {
-        logger.info(String.format("%s Thread.interrupted() is %b", this.threadName, Thread.interrupted()));
         if (Thread.interrupted()) {
             logger.info(String.format("%s interrupted while waiting for recovery", this.threadName));
+            this.interrupted = true;
             return;
         }
 
@@ -278,9 +282,9 @@ public class ProductionRunnable implements Runnable {
     }
 
     private void waitForMaintenance() {
-        logger.info(String.format("%s Thread.interrupted() is %b", this.threadName, Thread.interrupted()));
         if (Thread.interrupted()) {
             logger.info(String.format("%s interrupted waiting for maintenance", this.threadName));
+            this.interrupted = true;
             return;
         }
 
@@ -288,7 +292,7 @@ public class ProductionRunnable implements Runnable {
                 this.threadName,
                 this.productionLine.getName()));
 
-        while (!Thread.interrupted() && this.productionLine.maxNecessaryMaintenanceTimeInMinutes() > 0) {
+        while (!this.interrupted && this.productionLine.maxNecessaryMaintenanceTimeInMinutes() > 0) {
 
             logger.info(String.format("%s: maintenance time is needed for production line %s", this.threadName,
                     this.productionLine.getName()));
@@ -305,7 +309,9 @@ public class ProductionRunnable implements Runnable {
                 logger.info(String.format("s%s: production line %s was interrupted while waiting for maintenance",
                         this.threadName,
                         this.productionLine.getName()));
+                this.interrupted = true;
                 Thread.currentThread().interrupt();
+                return;
             }
         }
     }
