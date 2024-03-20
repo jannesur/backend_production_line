@@ -1,19 +1,19 @@
-spring:
-  h2:
-    console:
-      enabled: true
-  application:
-    name: productionline
-  datasource:
-    url: jdbc:h2:mem:productionLineTest
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: true
-    hibernate.ddl-auto: update
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: never
+# spring:
+#   h2:
+#     console:
+#       enabled: true
+#   application:
+#     name: productionline
+#   datasource:
+#     url: jdbc:h2:mem:productionLineTest
+#     username: sa
+#     password:
+#     driver-class-name: org.h2.Driver
+#   jpa:
+#     database-platform: org.hibernate.dialect.H2Dialect
+#     show-sql: true
+#     hibernate.ddl-auto: update
+#     defer-datasource-initialization: true
+#   sql:
+#     init:
+#       mode: never

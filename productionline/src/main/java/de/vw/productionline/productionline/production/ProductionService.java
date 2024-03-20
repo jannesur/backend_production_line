@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 
 import org.slf4j.Logger;
@@ -28,7 +27,7 @@ public class ProductionService {
     private ProductionRepository productionRepository;
     private ProductionLineService productionLineService;
     private ProductionTimeService productionTimeService;
-    private Map<UUID, Thread> productionThreads = new HashMap<>();
+    private Map<String, Thread> productionThreads = new HashMap<>();
     private long threadCount = 0l;
     private Logger logger = LoggerFactory.getLogger(ProductionService.class);
     private BiConsumer<Production, Set<ProductionTime>> saveProductionAndProductionTimes = this::saveProductionAndProductionTimes;
@@ -41,7 +40,7 @@ public class ProductionService {
         this.productionTimeService = productionTimeService;
     }
 
-    public void startProduction(UUID uuid) {
+    public void startProduction(String uuid) {
         ProductionLine productionLine = this.productionLineService.getProductionLineById(uuid);
         Production production = new Production(productionLine);
         logger.info(String.format("Starting production for production line: %s with UUID %s", productionLine, uuid));
@@ -55,7 +54,7 @@ public class ProductionService {
         productionThreads.put(productionLine.getUuid(), productionThread);
     }
 
-    public void stopProduction(UUID uuid) {
+    public void stopProduction(String uuid) {
         logger.info(String.format("Ending production for production line UUID: %s", uuid));
         Thread productionThread = this.productionThreads.get(uuid);
         if (productionThread == null) {
@@ -81,7 +80,7 @@ public class ProductionService {
     public void testSaving() {
 
         ProductionLine productionLine = this.productionLineService
-                .getProductionLineById(UUID.fromString("51aedaa5-04b2-419f-a481-f7f676bbc0d3"));
+                .getProductionLineById("51aedaa5-04b2-419f-a481-f7f676bbc0d3");
         Production production = new Production(productionLine, LocalDateTime.now(), LocalDateTime.now(), 5l);
 
         ProductionTime time1 = new ProductionTime(ProductionTimeType.FAILURE, 10l);
@@ -122,7 +121,7 @@ public class ProductionService {
         }
     }
 
-    public long getAllProducedCarsFromOneProductionLine(UUID productionLineUuid) {
+    public long getAllProducedCarsFromOneProductionLine(String productionLineUuid) {
         try {
             return productionRepository.findAllProductionsByProductionLineUuid(productionLineUuid)
                     .stream()
@@ -134,7 +133,7 @@ public class ProductionService {
     }
 
     public long getAllProducedCarsFromOneProductionLineForOneVehicleModel(
-            UUID productionLineUuid,
+            String productionLineUuid,
             VehicleModel vehicleModel) {
         try {
             return productionRepository.findAllProductionsByProductionLineUuidAndVehicleModel(
@@ -147,7 +146,7 @@ public class ProductionService {
         }
     }
 
-    public List<Set<ProductionTime>> getAllProductionTimesFromOneProductionLine(UUID productionLineUuid) {
+    public List<Set<ProductionTime>> getAllProductionTimesFromOneProductionLine(String productionLineUuid) {
         try {
             return productionRepository.findAllProductionsByProductionLineUuid(productionLineUuid)
                     .stream()
@@ -169,7 +168,7 @@ public class ProductionService {
         }
     }
 
-    public List<Set<ProductionTime>> getProductionTimeForOneProduction(UUID uuid) {
+    public List<Set<ProductionTime>> getProductionTimeForOneProduction(String uuid) {
         try {
             return productionRepository.findById(uuid)
                     .stream()

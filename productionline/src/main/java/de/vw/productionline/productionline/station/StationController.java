@@ -1,7 +1,6 @@
 package de.vw.productionline.productionline.station;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +31,7 @@ public class StationController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<Station> getStationById(@PathVariable UUID uuid) {
+    public ResponseEntity<Station> getStationById(@PathVariable String uuid) {
         return ResponseEntity.ok(this.stationService.getStationById(uuid));
     }
 
@@ -52,14 +51,14 @@ public class StationController {
     }
 
     @PutMapping("/add-employee")
-    public ResponseEntity<Station> addEmployeeToStation(@RequestParam UUID employeeUuid,
-            @RequestParam UUID stationUuid) {
+    public ResponseEntity<Station> addEmployeeToStation(@RequestParam String employeeUuid,
+            @RequestParam String stationUuid) {
         return ResponseEntity.ok(this.stationService.addEmployeeToStation(employeeUuid, stationUuid));
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> deleteStationById(@PathVariable UUID uuid) {
+    public ResponseEntity<Void> deleteStationById(@PathVariable String uuid) {
         this.stationService.deleteStationById(uuid);
-        return new ResponseEntity<>(null);
+        return ResponseEntity.ok(null);
     }
 }

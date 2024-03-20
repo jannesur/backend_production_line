@@ -41,14 +41,14 @@ public class ProductionController {
 
     @GetMapping("/carsFromOneProductionLine/{productionLineUuid}")
     public ResponseEntity<Long> getAllProducedCarsFromOneProductionLine(
-            @PathVariable(value = "productionLineUuid") UUID productionLineUuid) {
+            @PathVariable(value = "productionLineUuid") String productionLineUuid) {
         long producedCars = productionService.getAllProducedCarsFromOneProductionLine(productionLineUuid);
         return ResponseEntity.ok(producedCars);
     }
 
     @GetMapping("/carsFromOneProductionLineAndOneVehicleModel/{productionLineUuid}/{vehicleModel}")
     public ResponseEntity<Long> getAllProducedCarsFromOneProductionLineForOneVehicleModel(
-            @PathVariable(value = "productionLineUuid") UUID productionLineUuid,
+            @PathVariable(value = "productionLineUuid") String productionLineUuid,
             @PathVariable(value = "vehicleModel") VehicleModel vehicleModel) {
         long producedCars = productionService.getAllProducedCarsFromOneProductionLineForOneVehicleModel(
                 productionLineUuid, vehicleModel);
@@ -57,7 +57,7 @@ public class ProductionController {
 
     @GetMapping("/productionTimesFromOneProductionLine/{productionLineUuid}")
     public ResponseEntity<List<Set<ProductionTime>>> getAllProductionTimesFromOneProductionLine(
-            @PathVariable(value = "productionLineUuid") UUID productionLineUuid) {
+            @PathVariable(value = "productionLineUuid") String productionLineUuid) {
         List<Set<ProductionTime>> productionTimeList = productionService
                 .getAllProductionTimesFromOneProductionLine(productionLineUuid);
         return ResponseEntity.ok(productionTimeList);
@@ -72,7 +72,7 @@ public class ProductionController {
     }
 
     @GetMapping("/productionTimesFromOneProduction/{uuid}")
-    public List<Set<ProductionTime>> getProductionTimeForOneProduction(@PathVariable(value = "uuid") UUID uuid) {
+    public List<Set<ProductionTime>> getProductionTimeForOneProduction(@PathVariable(value = "uuid") String uuid) {
         List<Set<ProductionTime>> productionTimeList = productionService
                 .getProductionTimeForOneProduction(uuid);
         return productionTimeList;
@@ -86,13 +86,13 @@ public class ProductionController {
     }
 
     @PostMapping("/start/{uuid}")
-    public ResponseEntity<Void> startProductionLine(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Void> startProductionLine(@PathVariable(value = "uuid") String uuid) {
         productionService.startProduction(uuid);
         return ResponseEntity.ok(null);
     }
 
     @PostMapping("/stop/{uuid}")
-    public ResponseEntity<Void> stopProductionLine(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Void> stopProductionLine(@PathVariable(value = "uuid") String uuid) {
         productionService.stopProduction(uuid);
         return ResponseEntity.ok(null);
     }

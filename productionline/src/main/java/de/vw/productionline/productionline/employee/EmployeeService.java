@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
+import de.vw.productionline.productionline.productionstep.RecoveryRunnable;
 import de.vw.productionline.productionline.station.Station;
 import de.vw.productionline.productionline.station.StationRepository;
 import de.vw.productionline.productionline.station.StationService;
@@ -18,6 +21,8 @@ public class EmployeeService {
 
     private StationRepository stationRepository;
 
+    private Logger logger = LoggerFactory.getLogger(EmployeeService.class);
+
     private StationService stationService;
 
     public EmployeeService(EmployeeRepository employeeRepository, StationRepository stationRepository,
@@ -27,7 +32,7 @@ public class EmployeeService {
         this.stationService = stationService;
     }
 
-    public Employee getEmployeeById(UUID uuid) {
+    public Employee getEmployeeById(String uuid) {
         Optional<Employee> employee = employeeRepository.findById(uuid);
         if (employee.isEmpty()) {
             throw new ObjectNotFoundException("Employee not found");
@@ -47,7 +52,7 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public void deleteEmployee(UUID uuid) {
+    public void deleteEmployee(String uuid) {
         Optional<Employee> employee = employeeRepository.findById(uuid);
         int testsizebefore = employeeRepository.findAll().size();
         if (employee.isEmpty()) {
@@ -63,7 +68,7 @@ public class EmployeeService {
         int testsizeafter = employeeRepository.findAll().size();
     }
 
-    public Employee updatEmployee(UUID uuid, Employee employee) {
+    public Employee updatEmployee(String uuid, Employee employee) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(uuid);
         if (optionalEmployee.isEmpty()) {
             throw new ObjectNotFoundException("Employee not found.");

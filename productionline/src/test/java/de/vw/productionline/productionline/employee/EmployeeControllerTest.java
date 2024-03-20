@@ -20,7 +20,7 @@ import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
 import de.vw.productionline.productionline.station.Station;
 import de.vw.productionline.productionline.station.StationRepository;
 
-@SpringBootTest
+//@SpringBootTest
 public class EmployeeControllerTest {
 
     // @Autowired

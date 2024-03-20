@@ -29,12 +29,13 @@ public class DbInit {
     private StationRepository stationRepository;
     private Logger logger = LoggerFactory.getLogger(DbInit.class);
 
-    public DbInit(EmployeeRepository employeeRepository, ProductionLineRepository productionLineRepository,
+    public DbInit(ProductionLineRepository productionLineRepository, EmployeeRepository employeeRepository,
             RobotRepository robotRepository, StationRepository stationRepository) {
         this.employeeRepository = employeeRepository;
         this.productionLineRepository = productionLineRepository;
         this.robotRepository = robotRepository;
         this.stationRepository = stationRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     // @PostConstruct

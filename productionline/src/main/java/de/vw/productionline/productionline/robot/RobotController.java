@@ -31,7 +31,7 @@ public class RobotController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<Robot> getRobotById(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Robot> getRobotById(@PathVariable(value = "uuid") String uuid) {
         return ResponseEntity.ok(robotService.getRobotById(uuid));
     }
 
@@ -41,9 +41,9 @@ public class RobotController {
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> deleteRobot(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Void> deleteRobot(@PathVariable(value = "uuid") String uuid) {
         robotService.deleteRobot(uuid);
-        return new ResponseEntity<>(null);
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/without-productionLine")
@@ -52,7 +52,7 @@ public class RobotController {
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<Robot> updateRobot(@PathVariable UUID uuid, @RequestBody Robot updatedRobot) {
+    public ResponseEntity<Robot> updateRobot(@PathVariable String uuid, @RequestBody Robot updatedRobot) {
         return ResponseEntity.ok(robotService.updateRobot(uuid, updatedRobot));
     }
 }

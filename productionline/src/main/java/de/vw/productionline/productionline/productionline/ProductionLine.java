@@ -17,7 +17,7 @@ import jakarta.persistence.OneToMany;
 @Entity
 public class ProductionLine {
     @Id
-    private UUID uuid = UUID.randomUUID();
+    private String uuid = UUID.randomUUID().toString();
 
     private String name;
 
@@ -71,7 +71,7 @@ public class ProductionLine {
         }
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return this.uuid;
     }
 

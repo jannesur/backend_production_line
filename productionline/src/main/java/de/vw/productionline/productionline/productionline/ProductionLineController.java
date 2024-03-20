@@ -30,7 +30,7 @@ public class ProductionLineController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<ProductionLine> getProductionLineById(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<ProductionLine> getProductionLineById(@PathVariable(value = "uuid") String uuid) {
         logger.info(String.format("Looking for ProductionLine with id %s", uuid));
         return ResponseEntity.ok(productionLineService.getProductionLineById(uuid));
     }
@@ -46,13 +46,13 @@ public class ProductionLineController {
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> deleteProductionLine(@PathVariable(value = "uuid") UUID uuid) {
+    public ResponseEntity<Void> deleteProductionLine(@PathVariable(value = "uuid") String uuid) {
         productionLineService.deleteProductionLine(uuid);
         return ResponseEntity.ok(null);
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<ProductionLine> updateProductionLine(@PathVariable UUID uuid,
+    public ResponseEntity<ProductionLine> updateProductionLine(@PathVariable String uuid,
             @RequestBody ProductionLine updatedProductionLine) {
         return ResponseEntity.ok(productionLineService.updateProductionLine(uuid, updatedProductionLine));
     }

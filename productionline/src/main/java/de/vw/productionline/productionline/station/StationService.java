@@ -25,7 +25,7 @@ public class StationService {
         return this.stationRepository.findAll();
     }
 
-    public Station getStationById(UUID uuid) {
+    public Station getStationById(String uuid) {
         Optional<Station> optional = this.stationRepository.findById(uuid);
         if (optional.isEmpty()) {
             throw new ObjectNotFoundException(String.format("Station with UUID %s does not exist.", uuid));
@@ -51,7 +51,7 @@ public class StationService {
         return this.stationRepository.save(station);
     }
 
-    public Station addEmployeeToStation(UUID employeeUuid, UUID stationUuid) {
+    public Station addEmployeeToStation(String employeeUuid, String stationUuid) {
         Optional<Employee> employeeOptional = this.employeeRepository.findById(employeeUuid);
         if (employeeOptional.isEmpty()) {
             throw new ObjectNotFoundException(String.format("Employee with UUID %s does not exist.", employeeUuid));
@@ -68,7 +68,7 @@ public class StationService {
         return station;
     }
 
-    public void deleteStationById(UUID uuid) {
+    public void deleteStationById(String uuid) {
         Optional<Station> station = this.stationRepository.findById(uuid);
         if (station.isEmpty()) {
             throw new ObjectNotFoundException(String.format("Station with UUID %s does not exist.", uuid));

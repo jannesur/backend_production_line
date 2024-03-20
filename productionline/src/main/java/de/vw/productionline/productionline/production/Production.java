@@ -23,13 +23,13 @@ import jakarta.persistence.Transient;
 public class Production {
 
     @Id
-    private UUID uuid = UUID.randomUUID();
+    private String uuid = UUID.randomUUID().toString();
 
     @Transient
     @JsonIgnore
     private ProductionLine productionLine;
 
-    private UUID productionLineUuid;
+    private String productionLineUuid;
     private String productionLineName;
 
     @Enumerated(EnumType.STRING)
@@ -42,7 +42,7 @@ public class Production {
     @JsonManagedReference
     private Set<ProductionTime> productionTimes = new HashSet<>();
 
-    public Production(ProductionLine productionLine, UUID productionLineUuid, String productionLineName,
+    public Production(ProductionLine productionLine, String productionLineUuid, String productionLineName,
             VehicleModel vehicleModel, LocalDateTime startTime, LocalDateTime endTime, long numberProducedCars,
             Set<ProductionTime> productionTimes) {
         this.productionLine = productionLine;
@@ -72,7 +72,7 @@ public class Production {
         this.numberProducedCars++;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
@@ -84,11 +84,11 @@ public class Production {
         this.productionLine = productionLine;
     }
 
-    public UUID getProductionLineUuid() {
+    public String getProductionLineUuid() {
         return productionLineUuid;
     }
 
-    public void setProductionLineUuid(UUID productionLineUuid) {
+    public void setProductionLineUuid(String productionLineUuid) {
         this.productionLineUuid = productionLineUuid;
     }
 
