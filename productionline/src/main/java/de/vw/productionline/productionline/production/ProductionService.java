@@ -102,9 +102,8 @@ public class ProductionService {
 
     public long getAllProducedCarsFromOneVehicleModel(VehicleModel vehicleModel) {
         try {
-            return productionRepository.findAll()
+            return productionRepository.findAllProductionsByVehicleModel(vehicleModel)
                     .stream()
-                    .filter(production -> production.getVehicleModel().equals(vehicleModel))
                     .mapToLong(Production::getNumberProducedCars)
                     .sum();
         } catch (ObjectNotFoundException e) {
@@ -125,9 +124,8 @@ public class ProductionService {
 
     public long getAllProducedCarsFromOneProductionLine(UUID productionLineUuid) {
         try {
-            return productionRepository.findAll()
+            return productionRepository.findAllProductionsByProductionLineUuid(productionLineUuid)
                     .stream()
-                    .filter(production -> production.getProductionLineUuid().equals(productionLineUuid))
                     .mapToLong(Production::getNumberProducedCars)
                     .sum();
         } catch (ObjectNotFoundException e) {
@@ -135,17 +133,61 @@ public class ProductionService {
         }
     }
 
-    public long getAllProducedCarsFromOneProductionLineForOneVehicleModel(UUID productionLineUuid,
+    public long getAllProducedCarsFromOneProductionLineForOneVehicleModel(
+            UUID productionLineUuid,
             VehicleModel vehicleModel) {
         try {
-            return productionRepository.findAll()
+            return productionRepository.findAllProductionsByProductionLineUuidAndVehicleModel(
+                    productionLineUuid, vehicleModel)
                     .stream()
-                    .filter(production -> production.getProductionLineUuid().equals(productionLineUuid))
-                    .filter(production -> production.getVehicleModel().equals(vehicleModel))
                     .mapToLong(Production::getNumberProducedCars)
                     .sum();
         } catch (ObjectNotFoundException e) {
             throw new ObjectNotFoundException("No produced cars found for :" + productionLineUuid + " " + vehicleModel);
+        }
+    }
+
+    public List<Set<ProductionTime>> getAllProductionTimesFromOneProductionLine(UUID productionLineUuid) {
+        try {
+            return productionRepository.findAllProductionsByProductionLineUuid(productionLineUuid)
+                    .stream()
+                    .map(Production::getProductionTimes)
+                    .toList();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No production times found for :" + productionLineUuid);
+        }
+    }
+
+    public List<Set<ProductionTime>> getAllProductionTimesFromOneVehicleModel(VehicleModel vehicleModel) {
+        try {
+            return productionRepository.findAllProductionsByVehicleModel(vehicleModel)
+                    .stream()
+                    .map(Production::getProductionTimes)
+                    .toList();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No production times found for :" + vehicleModel);
+        }
+    }
+
+    public List<Set<ProductionTime>> getProductionTimeForOneProduction(UUID uuid) {
+        try {
+            return productionRepository.findById(uuid)
+                    .stream()
+                    .map(Production::getProductionTimes)
+                    .toList();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No production times found for :" + uuid);
+        }
+    }
+
+    public List<Set<ProductionTime>> getAllProductionTimes() {
+        try {
+            return productionRepository.findAll()
+                    .stream()
+                    .map(Production::getProductionTimes)
+                    .toList();
+        } catch (ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No production times found for :");
         }
     }
 

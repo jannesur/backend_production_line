@@ -36,8 +36,8 @@ public class RobotService {
     }
 
     public List<Robot> getAllRobotsNotInProductionLine() {
-        List<Robot> robots = this.robotRepository.findAll();
-        return robots.stream().filter(robot -> robot.getProductionLine() != null).toList();
+        List<Robot> robots = this.robotRepository.findAllByProductionLineIsNull();
+        return robots;
     }
 
     public Robot updateRobot(UUID uuid, Robot robot) {
