@@ -13,11 +13,8 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.vw.productionline.productionline.exceptions.ProductionLineAlreadyRunningException;
-import de.vw.productionline.productionline.exceptions.ProductionLineIncompleteException;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.SimulationStatus;
-import de.vw.productionline.productionline.productionline.Status;
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
 import de.vw.productionline.productionline.productionstep.RecoveryRunnable;
@@ -59,29 +56,7 @@ public class ProductionRunnable implements Runnable {
     public void run() {
 
         logger.info(String.format("Start %s", threadName));
-
-        if (!this.productionLine.getStatus().equals(Status.READY)) {
-            synchronized (this) {
-                logger.info(String.format("%s: production line %s not ready", this.threadName,
-                        this.productionLine.getName()));
-                throw new ProductionLineIncompleteException();
-            }
-        }
-
-        if (this.productionLine.getSimulationStatus().equals(SimulationStatus.RUNNING)) {
-            synchronized (this) {
-                logger.info(String.format("%s: production line %s already running", this.threadName,
-                        this.productionLine.getName()));
-                throw new ProductionLineAlreadyRunningException();
-            }
-        }
-
-        synchronized (this) {
-            this.productionLine.setSimulationStatus(SimulationStatus.RUNNING);
-            production.setStartTime(LocalDateTime.now());
-            logger.info(String.format("%s: set status of production line %s to RUNNING", this.threadName,
-                    this.productionLine.getName()));
-        }
+        this.production.setStartTime(LocalDateTime.now());
 
         List<ProductionStep> productionStepsInOrder = this.productionLine.getProductionSteps().stream()
                 .sorted((step1, step2) -> Integer.compare(step1.getStep(), step2.getStep()))

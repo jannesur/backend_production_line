@@ -40,9 +40,12 @@ public class MaintenanceWaitingRunnable implements Runnable {
                 return;
             }
         }
-        logger.info(String.format("%s: robot %s now needs maintenance", this.threadName,
-                this.robot.getName()));
-        this.robot.setProductionStatus(ProductionStatus.NEEDS_MAINTENANCE);
-        this.endThreadConsumer.accept(this.threadName);
+        synchronized (this) {
+            logger.info(String.format("%s: robot %s now needs maintenance", this.threadName,
+                    this.robot.getName()));
+            this.robot.setProductionStatus(ProductionStatus.NEEDS_MAINTENANCE);
+            this.endThreadConsumer.accept(this.threadName);
+        }
+
     }
 }
