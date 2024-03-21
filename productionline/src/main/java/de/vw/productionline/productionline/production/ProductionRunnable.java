@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -39,9 +40,12 @@ public class ProductionRunnable implements Runnable {
     private Set<ProductionTime> productionTimes = new HashSet<>();
     private Map<String, Thread> childrenThreads = new HashMap<>();
     private long threadCount = 0l;
-    private boolean interrupted = false;
     private final Consumer<ProductionTime> productionTimeConsumer = productionTime -> productionTimes
             .add(productionTime);
+    private final BiConsumer<String, Robot> robotMaintenanceConsumer = (String maintThreadName, Robot robot) -> {
+        childrenThreads.remove(maintThreadName);
+        startMaintenanceCountdown(robot);
+    };
     private final Logger logger = LoggerFactory.getLogger(ProductionRunnable.class);
 
     public ProductionRunnable(Production production, String threadName, long threadParentNumber,
@@ -81,24 +85,18 @@ public class ProductionRunnable implements Runnable {
                     this.productionLine.getName()));
         }
 
-        if (Thread.interrupted()) {
-            this.interrupted = true;
-        }
+        List<ProductionStep> productionStepsInOrder = this.productionLine.getProductionSteps().stream()
+                .sorted((step1, step2) -> Integer.compare(step1.getStep(), step2.getStep()))
+                .toList();
 
-        while (!this.interrupted) {
+        while (!Thread.currentThread().isInterrupted()) {
             logger.info(String.format("%s: starting a new car", this.threadName));
-
-            List<ProductionStep> productionStepsInOrder = this.productionLine.getProductionSteps().stream()
-                    .sorted((step1, step2) -> Integer.compare(step1.getStep(), step2.getStep()))
-                    .toList();
 
             for (ProductionStep productionStep : productionStepsInOrder) {
                 logger.info(
                         String.format("%s: current production step is %s", this.threadName, productionStep));
 
-                if (!this.interrupted) {
-                    waitForRecovery(productionStep);
-                }
+                waitForRecovery(productionStep);
 
                 if (!this.interrupted) {
                     dealWithFailure(productionStep);
@@ -137,16 +135,28 @@ public class ProductionRunnable implements Runnable {
         cleanUp();
     }
 
-    private void cleanUp() {
-        Thread.currentThread().interrupt();
-        logger.info(String.format("%s: clean up production line %s", this.threadName,
-                this.production.getProductionLine().getName()));
+    private void waitForRecovery(ProductionStep productionStep) {
+        if (Thread.currentThread().isInterrupted()) {
+            logger.info(String.format("%s interrupted before production step %s could check for recovery",
+                    this.threadName, productionStep.getName()));
+            return;
+        }
 
-        this.production.setEndTime(LocalDateTime.now());
-        this.productionLine.setSimulationStatus(SimulationStatus.STOPPED);
-        this.productionLine.setAllProductionStepStatus(ProductionStatus.WAITING);
-        this.productionLine.resetAllProductionStepRecoveryTimes();
-        this.saveProductionAndProductionTimesConsumer.accept(production, this.productionTimes);
+        logger.info(String.format("%s: check if recovery time is needed for production step %s",
+                this.threadName,
+                productionStep.getName()));
+
+        while (!Thread.currentThread().isInterrupted()
+                && productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
+            try {
+                Thread.sleep(productionStep.getRemainingRecoveryTime() * 1000);
+            } catch (InterruptedException e) {
+                logger.info(String.format("%s: production step %s was interrupted while waiting for recovery",
+                        this.threadName,
+                        productionStep.getName()));
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     private boolean isFailureStep(ProductionStep productionStep) {
@@ -188,15 +198,18 @@ public class ProductionRunnable implements Runnable {
         }
 
         long remainingProductionTime = productionStep.getDurationInMinutes();
-
+        logger.info(String.format("%s: production step %s has %d minutes of production left", this.threadName,
+                productionStep.getName(), remainingProductionTime));
         while (!this.interrupted && remainingProductionTime > 0) {
-            logger.info(String.format("%s: production step %s in production", this.threadName,
-                    productionStep.getName()));
+            // logger.info(String.format("%s: production step %s in production",
+            // this.threadName,
+            // productionStep.getName()));
             try {
                 synchronized (this) {
                     remainingProductionTime--;
-                    logger.info(String.format("%s: remaining production time %d for production step %s",
-                            this.threadName, remainingProductionTime, productionStep.getName()));
+                    // logger.info(String.format("%s: remaining production time %d for production
+                    // step %s",
+                    // this.threadName, remainingProductionTime, productionStep.getName()));
                 }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -209,12 +222,17 @@ public class ProductionRunnable implements Runnable {
             }
         }
 
-        logger.info(String.format("%s: saving production time for step %s",
-                this.threadName,
+        logger.info(String.format("%s: production step %s finished production", this.threadName,
                 productionStep.getName()));
-        ProductionTime productionTime = new ProductionTime(ProductionTimeType.PRODUCTION,
-                productionStep.getDurationInMinutes(), this.production);
-        this.productionTimes.add(productionTime);
+
+        synchronized (this) {
+            logger.info(String.format("%s: saving production time for step %s",
+                    this.threadName,
+                    productionStep.getName()));
+            ProductionTime productionTime = new ProductionTime(ProductionTimeType.PRODUCTION,
+                    productionStep.getDurationInMinutes(), this.production);
+            this.productionTimes.add(productionTime);
+        }
 
     }
 
@@ -228,40 +246,20 @@ public class ProductionRunnable implements Runnable {
         this.threadCount++;
         String recoveryThreadName = String.format("%s subthread %d.%d - recovery",
                 this.threadName, this.threadParentNumber, this.threadCount);
+
+        productionStep.setProductionStatus(ProductionStatus.RECOVERY);
+
         Thread recoveryThread = new Thread(
                 new RecoveryRunnable(productionStep, isFailureRecovery, recoveryThreadName,
                         this.productionTimeConsumer),
                 recoveryThreadName);
+
         this.childrenThreads.put(recoveryThreadName, recoveryThread);
+
         synchronized (this) {
             logger.info(String.format("%s: start recovery for production step %s", this.threadName,
                     productionStep.getName()));
             recoveryThread.start();
-        }
-    }
-
-    private void waitForRecovery(ProductionStep productionStep) {
-        if (Thread.interrupted()) {
-            logger.info(String.format("%s interrupted while waiting for recovery", this.threadName));
-            this.interrupted = true;
-            return;
-        }
-
-        logger.info(String.format("%s: check if recovery time is needed for production step %s",
-                this.threadName,
-                productionStep.getName()));
-
-        while (!this.interrupted && productionStep.getProductionStatus().equals(ProductionStatus.RECOVERY)) {
-            try {
-                Thread.sleep(productionStep.getRemainingRecoveryTime() * 1000);
-            } catch (InterruptedException e) {
-                logger.info(String.format("%s: production step %s was interrupted while waiting for recovery",
-                        this.threadName,
-                        productionStep.getName()));
-                this.interrupted = true;
-                Thread.currentThread().interrupt();
-                return;
-            }
         }
     }
 
@@ -295,7 +293,7 @@ public class ProductionRunnable implements Runnable {
                     this.threadParentNumber,
                     this.threadCount);
             Thread performMaintenanceThread = new Thread(
-                    new MaintenanceRunnable(robot, maintThreadName, productionTimeConsumer),
+                    new MaintenanceRunnable(robot, maintThreadName, productionTimeConsumer, robotMaintenanceConsumer),
                     maintThreadName);
             this.childrenThreads.put(maintThreadName, performMaintenanceThread);
             performMaintenanceThread.start();
@@ -334,6 +332,28 @@ public class ProductionRunnable implements Runnable {
                 Thread.currentThread().interrupt();
                 return;
             }
+        }
+    }
+
+    private void cleanUp() {
+        synchronized (this) {
+            logger.info(String.format("%s: clean up production line %s", this.threadName,
+                    this.production.getProductionLine().getName()));
+            Thread.currentThread().interrupt();
+            stopChildThreads();
+
+            this.production.setEndTime(LocalDateTime.now());
+            this.productionLine.setSimulationStatus(SimulationStatus.STOPPED);
+            this.productionLine.setAllProductionStepStatus(ProductionStatus.WAITING);
+            this.productionLine.resetAllProductionStepRecoveryTimes();
+            this.saveProductionAndProductionTimesConsumer.accept(production, this.productionTimes);
+        }
+    }
+
+    private void stopChildThreads() {
+        for (Entry<String, Thread> entry : this.childrenThreads.entrySet()) {
+            entry.getValue().interrupt();
+            entry.setValue(null);
         }
     }
 

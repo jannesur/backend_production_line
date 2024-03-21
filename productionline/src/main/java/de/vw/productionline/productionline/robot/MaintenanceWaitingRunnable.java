@@ -22,10 +22,11 @@ public class MaintenanceWaitingRunnable implements Runnable {
         long timeToMaintenance = this.robot.getMaintenanceCycleInMinutes();
         logger.info(String.format("%s: robot %s has %d minutes to wait", this.threadName,
                 this.robot.getName(), timeToMaintenance));
-        while (timeToMaintenance > 0) {
+        while (!Thread.currentThread().isInterrupted() && timeToMaintenance > 0) {
             timeToMaintenance--;
-            logger.info(String.format("%s: %d minutes left to wait for maintenance for robot %s", this.threadName,
-                    timeToMaintenance, this.robot.getName()));
+            // logger.info(String.format("%s: %d minutes left to wait for maintenance for
+            // robot %s", this.threadName,
+            // timeToMaintenance, this.robot.getName()));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
@@ -35,7 +36,8 @@ public class MaintenanceWaitingRunnable implements Runnable {
                 return;
             }
         }
-
+        logger.info(String.format("%s: robot %s now needs maintenance", this.threadName,
+                this.robot.getName()));
         this.robot.setProductionStatus(ProductionStatus.NEEDS_MAINTENANCE);
     }
 }
