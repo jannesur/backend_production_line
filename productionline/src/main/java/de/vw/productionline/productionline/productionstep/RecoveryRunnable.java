@@ -14,15 +14,17 @@ public class RecoveryRunnable implements Runnable {
     private boolean isFailureRecovery;
     private String threadName;
     private Consumer<ProductionTime> productionTimeConsumer;
+    private Consumer<String> endThreadConsumer;
 
     private Logger logger = LoggerFactory.getLogger(RecoveryRunnable.class);
 
     public RecoveryRunnable(ProductionStep productionStep, boolean isFailureRecovery, String threadName,
-            Consumer<ProductionTime> productionTimeConsumer) {
+            Consumer<ProductionTime> productionTimeConsumer, Consumer<String> endThreadConsumer) {
         this.productionStep = productionStep;
         this.isFailureRecovery = isFailureRecovery;
         this.threadName = threadName;
         this.productionTimeConsumer = productionTimeConsumer;
+        this.endThreadConsumer = endThreadConsumer;
     }
 
     @Override
@@ -73,6 +75,8 @@ public class RecoveryRunnable implements Runnable {
                 this.productionTimeConsumer.accept(productionTime);
             }
         }
+
+        this.endThreadConsumer.accept(this.threadName);
     }
 
 }

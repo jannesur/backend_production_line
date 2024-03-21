@@ -1,6 +1,5 @@
 package de.vw.productionline.productionline.robot;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -15,16 +14,19 @@ public class MaintenanceRunnable implements Runnable {
     private Robot robot;
     private String threadName;
     private Consumer<ProductionTime> productionTimeConsumer;
-    private BiConsumer<String, Robot> robotMaintenanceConsumer;
+    private Consumer<Robot> robotMaintenanceConsumer;
+    private Consumer<String> endThreadConsumer;
 
     private Logger logger = LoggerFactory.getLogger(MaintenanceRunnable.class);
 
     public MaintenanceRunnable(Robot robot, String threadName,
-            Consumer<ProductionTime> productionTimeConsumer, BiConsumer<String, Robot> robotMaintenanceConsumer) {
+            Consumer<ProductionTime> productionTimeConsumer, Consumer<Robot> robotMaintenanceConsumer,
+            Consumer<String> endThreadConsumer) {
         this.robot = robot;
         this.threadName = threadName;
         this.productionTimeConsumer = productionTimeConsumer;
         this.robotMaintenanceConsumer = robotMaintenanceConsumer;
+        this.endThreadConsumer = endThreadConsumer;
     }
 
     @Override
@@ -60,9 +62,10 @@ public class MaintenanceRunnable implements Runnable {
             ProductionTime productionTime = new ProductionTime(ProductionTimeType.MAINTENANCE,
                     this.robot.getMaintenanceTimeInMinutes(), null);
             this.productionTimeConsumer.accept(productionTime);
-            this.robotMaintenanceConsumer.accept(this.threadName, this.robot);
+            this.robotMaintenanceConsumer.accept(this.robot);
         }
 
+        this.endThreadConsumer.accept(this.threadName);
     }
 
 }

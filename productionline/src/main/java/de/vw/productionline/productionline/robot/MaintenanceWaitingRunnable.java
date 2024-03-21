@@ -1,5 +1,7 @@
 package de.vw.productionline.productionline.robot;
 
+import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,11 +10,13 @@ import de.vw.productionline.productionline.productionstep.ProductionStatus;
 public class MaintenanceWaitingRunnable implements Runnable {
     private Robot robot;
     private String threadName;
+    private Consumer<String> endThreadConsumer;
     private Logger logger = LoggerFactory.getLogger(MaintenanceWaitingRunnable.class);
 
-    public MaintenanceWaitingRunnable(Robot robot, String threadName) {
+    public MaintenanceWaitingRunnable(Robot robot, String threadName, Consumer<String> endThreadConsumer) {
         this.robot = robot;
         this.threadName = threadName;
+        this.endThreadConsumer = endThreadConsumer;
     }
 
     @Override
@@ -39,5 +43,6 @@ public class MaintenanceWaitingRunnable implements Runnable {
         logger.info(String.format("%s: robot %s now needs maintenance", this.threadName,
                 this.robot.getName()));
         this.robot.setProductionStatus(ProductionStatus.NEEDS_MAINTENANCE);
+        this.endThreadConsumer.accept(this.threadName);
     }
 }
