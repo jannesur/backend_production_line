@@ -20,6 +20,7 @@ import de.vw.productionline.productionline.robot.Robot;
 import de.vw.productionline.productionline.robot.RobotRepository;
 import de.vw.productionline.productionline.station.Station;
 import de.vw.productionline.productionline.station.StationRepository;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class DbInit {

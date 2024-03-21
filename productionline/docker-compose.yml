@@ -1,3 +1,4 @@
+#Die docker-compose.yml muss übergeordnet über dem Backend und Frontend liegen
 version: "3.8"
 services:
   backend:
@@ -5,7 +6,7 @@ services:
       db:
         condition: service_healthy
     build:
-      context: .
+      context: ./backend_production_line/productionline
     image: productionlinebackend:1.0
     container_name: backend
     environment:
@@ -17,6 +18,7 @@ services:
       - "8080:8080"
     networks:
       - backend-db
+      - backend-frontend
 
   db:
     image: mysql:latest
@@ -24,8 +26,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: productionlinedb
-    #      MYSQL_USER: root
-    #      MYSQL_PASSWORD: root
     networks:
       - backend-db
     ports:
@@ -33,7 +33,20 @@ services:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 2s
-      retries: 2
+      retries: 1
+
+  frontend:
+    image: productionlinefrontend:1.0
+    build:
+      context: ./frontend_production_line
+    container_name: frontend
+    ports:
+      - 5173:80
+    depends_on:
+      - backend
+    networks:
+      - backend-frontend
 
 networks:
   backend-db:
+  backend-frontend:
