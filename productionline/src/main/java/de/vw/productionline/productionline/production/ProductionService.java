@@ -1,8 +1,6 @@
 package de.vw.productionline.productionline.production;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,13 +12,16 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import de.vw.productionline.productionline.exceptions.ObjectNotFoundException;
+import de.vw.productionline.productionline.exceptions.ProductionLineAlreadyRunningException;
+import de.vw.productionline.productionline.exceptions.ProductionLineIncompleteException;
 import de.vw.productionline.productionline.exceptions.ProductionLineNotRunningException;
 import de.vw.productionline.productionline.productionline.ProductionLine;
 import de.vw.productionline.productionline.productionline.ProductionLineService;
+import de.vw.productionline.productionline.productionline.SimulationStatus;
+import de.vw.productionline.productionline.productionline.Status;
 import de.vw.productionline.productionline.productionline.VehicleModel;
 import de.vw.productionline.productionline.productiontime.ProductionTime;
 import de.vw.productionline.productionline.productiontime.ProductionTimeService;
-import de.vw.productionline.productionline.productiontime.ProductionTimeType;
 
 @Service
 public class ProductionService {
@@ -42,6 +43,17 @@ public class ProductionService {
 
     public void startProduction(String uuid) {
         ProductionLine productionLine = this.productionLineService.getProductionLineById(uuid);
+        if (productionLine.getStatus().equals(Status.INCOMPLETE)) {
+            throw new ProductionLineIncompleteException();
+        }
+
+        if (productionLine.getSimulationStatus().equals(SimulationStatus.RUNNING)) {
+            throw new ProductionLineAlreadyRunningException();
+        }
+
+        productionLine.setSimulationStatus(SimulationStatus.RUNNING);
+        productionLineService.updateProductionLine(productionLine);
+
         Production production = new Production(productionLine);
         logger.info(String.format("Starting production for production line: %s with UUID %s", productionLine, uuid));
         this.threadCount++;
@@ -55,6 +67,9 @@ public class ProductionService {
     }
 
     public void stopProduction(String uuid) {
+        // If the production line doesn't exist, the service throws an
+        // ObjectNotFoundException
+        this.productionLineService.getProductionLineById(uuid);
         logger.info(String.format("Ending production for production line UUID: %s", uuid));
         Thread productionThread = this.productionThreads.get(uuid);
         if (productionThread == null) {
@@ -75,24 +90,6 @@ public class ProductionService {
             productionTime.setProduction(production);
             this.productionTimeService.saveProductionTime(productionTime);
         }
-    }
-
-    public void testSaving() {
-
-        ProductionLine productionLine = this.productionLineService
-                .getProductionLineById("51aedaa5-04b2-419f-a481-f7f676bbc0d3");
-        Production production = new Production(productionLine, LocalDateTime.now(), LocalDateTime.now(), 5l);
-
-        ProductionTime time1 = new ProductionTime(ProductionTimeType.FAILURE, 10l);
-        ProductionTime time2 = new ProductionTime(ProductionTimeType.MAINTENANCE, 20l);
-        ProductionTime time3 = new ProductionTime(ProductionTimeType.PRODUCTION, 100l);
-
-        Set<ProductionTime> times = new HashSet<>();
-        times.add(time1);
-        times.add(time2);
-        times.add(time3);
-
-        saveProductionAndProductionTimes(production, times);
     }
 
     public List<Production> getAllProductions() {

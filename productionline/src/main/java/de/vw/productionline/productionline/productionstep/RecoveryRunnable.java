@@ -14,15 +14,17 @@ public class RecoveryRunnable implements Runnable {
     private boolean isFailureRecovery;
     private String threadName;
     private Consumer<ProductionTime> productionTimeConsumer;
+    private Consumer<String> endThreadConsumer;
 
     private Logger logger = LoggerFactory.getLogger(RecoveryRunnable.class);
 
     public RecoveryRunnable(ProductionStep productionStep, boolean isFailureRecovery, String threadName,
-            Consumer<ProductionTime> productionTimeConsumer) {
+            Consumer<ProductionTime> productionTimeConsumer, Consumer<String> endThreadConsumer) {
         this.productionStep = productionStep;
         this.isFailureRecovery = isFailureRecovery;
         this.threadName = threadName;
         this.productionTimeConsumer = productionTimeConsumer;
+        this.endThreadConsumer = endThreadConsumer;
     }
 
     @Override
@@ -40,12 +42,13 @@ public class RecoveryRunnable implements Runnable {
                     this.productionStep.getName(), recoveryTimeRemaining));
         }
 
-        while (!Thread.interrupted() && this.productionStep.getRemainingRecoveryTime() > 0) {
+        while (!Thread.currentThread().isInterrupted() && this.productionStep.getRemainingRecoveryTime() > 0) {
             try {
                 synchronized (this) {
                     long remainingTime = this.productionStep.reduceRecoveryTimeByOneMinute();
-                    logger.info(String.format("%s: production step %s recovery time left %d", this.threadName,
-                            this.productionStep.getName(), remainingTime));
+                    // logger.info(String.format("%s: production step %s recovery time left %d",
+                    // this.threadName,
+                    // this.productionStep.getName(), remainingTime));
                 }
 
                 Thread.sleep(1000);
@@ -57,17 +60,23 @@ public class RecoveryRunnable implements Runnable {
                 return;
             }
         }
-        this.productionStep.setProductionStatus(ProductionStatus.WAITING);
 
-        if (this.isFailureRecovery) {
-            logger.info(String.format("%s: saving failure time for step %s",
-                    this.threadName,
-                    productionStep.getName()));
-            ProductionTime productionTime = new ProductionTime(ProductionTimeType.FAILURE,
-                    productionStep.getTimeToRecovery(), null);
-            this.productionTimeConsumer.accept(productionTime);
+        this.productionStep.setProductionStatus(ProductionStatus.WAITING);
+        logger.info(String.format("%s: production step %s is now recovered", this.threadName,
+                this.productionStep.getName()));
+
+        if (!Thread.currentThread().isInterrupted() && this.isFailureRecovery) {
+            synchronized (this) {
+                logger.info(String.format("%s: saving failure time for step %s",
+                        this.threadName,
+                        productionStep.getName()));
+                ProductionTime productionTime = new ProductionTime(ProductionTimeType.FAILURE,
+                        productionStep.getTimeToRecovery(), null);
+                this.productionTimeConsumer.accept(productionTime);
+            }
         }
 
+        this.endThreadConsumer.accept(this.threadName);
     }
 
 }

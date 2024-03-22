@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import de.vw.productionline.productionline.productionstep.ProductionStatus;
 import de.vw.productionline.productionline.productionstep.ProductionStep;
+import de.vw.productionline.productionline.robot.Robot;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -56,7 +57,8 @@ public class ProductionLine {
     public long maxNecessaryMaintenanceTimeInMinutes() {
         return this.productionSteps.stream()
                 .filter(e -> e.getProductionStatus().equals(ProductionStatus.NEEDS_MAINTENANCE))
-                .mapToLong(e -> e.getRemainingRecoveryTime()).max().orElse(0);
+                .map(e -> (Robot) e)
+                .mapToLong(e -> e.getMaintenanceTimeInMinutes()).max().orElse(0);
     }
 
     public void setAllProductionStepStatus(ProductionStatus productionStatus) {

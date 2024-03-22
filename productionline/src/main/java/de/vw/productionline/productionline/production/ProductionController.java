@@ -2,7 +2,6 @@ package de.vw.productionline.productionline.production;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -95,11 +94,6 @@ public class ProductionController {
     public ResponseEntity<Void> stopProductionLine(@PathVariable(value = "uuid") String uuid) {
         productionService.stopProduction(uuid);
         return ResponseEntity.ok(null);
-    }
-
-    @GetMapping("/test")
-    public void test() {
-        this.productionService.testSaving();
     }
 
     @GetMapping("/get-all")
